@@ -1,0 +1,85 @@
+# MIMO channel estimation (ported from the-ai-telco-engineer)
+# Native Python evaluator (no Docker) + EvoX self-evolving search.
+#
+# Run:
+#   uv run skydiscover-run \
+#     benchmarks/channel_estimation/initial_program.py \
+#     benchmarks/channel_estimation/evaluator.py \
+#     -c benchmarks/channel_estimation/config.yaml \
+#     --search evox --iterations 100
+
+# General settings
+max_iterations: 100
+checkpoint_interval: 10
+log_level: "INFO"
+random_seed: 42
+
+# Generation settings
+language: python
+diff_based_generation: true
+max_solution_length: 60000
+
+# LLM configuration
+llm:
+  api_base: "https://api.openai.com/v1"
+  # No api_key here: it falls back to the OPENAI_API_KEY env var, which is
+  # provided once via the repo-root .env (auto-loaded by the CLI).
+  models:
+    - name: "gpt-5.5"
+      weight: 1.0
+  temperature: 0.7
+  max_tokens: 32000
+  timeout: 600
+
+# Search configuration
+search:
+  type: "evox"
+  database:
+    auto_generate_variation_operators: true
+
+# Evaluator configuration
+# One Monte-Carlo BLER simulation per candidate. Single-stage (no cascade);
+# raise the timeout substantially if you end up running on CPU.
+evaluator:
+  timeout: 1200
+  max_retries: 3
+  cascade_evaluation: false
+
+# Prompt configuration
+prompt:
+  system_message: |
+    You are an expert wireless-communications engineer improving the CHANNEL
+    ESTIMATOR of a 4x16 MIMO OFDM uplink detector built with Sionna (3GPP UMi
+    channel, 5G NR LDPC, QPSK). Only edit code inside the EVOLVE-BLOCK markers —
+    the LMMSE equalizer and APP demapper are fixed and required by the task.
+
+    `mimo_detector(y, no)` takes the received resource grid
+    y [batch, num_rx_ant, num_ofdm_symbols, num_subcarriers] (complex64) and the
+    noise variance `no`, and returns LLRs
+    [batch, num_ut, num_tx_ant, num_data_symbols * num_bits_per_symbol] (float32).
+
+    Your channel estimator must return h_hat and err_var as 7-D tensors with shape
+    [batch, num_rx, num_rx_ant, num_tx, num_streams_per_tx, num_ofdm_symbols, fft_size]
+    (h_hat complex64, err_var float32), which feed the fixed LMMSE equalizer.
+
+    System parameters come from `link_config.py` (RG, SM, NUM_BITS_PER_SYMBOL,
+    NUM_TX_ANT, NUM_RX_ANT, ...) — import them; never hardcode. `RG.pilot_pattern`
+    holds the pilot positions and pilot symbols. Stay torch.compile-compatible and
+    avoid algorithms with exponential complexity in antennas or constellation size.
+
+    OBJECTIVE: minimize the Normalized Validation Error
+    (NVE = mean over SNR of BLER_candidate / BLER_perfect-CSI). The evaluator
+    reports combined_score = 1 / NVE, so HIGHER combined_score is better. The LS
+    baseline achieves NVE ~= 94 (combined_score ~= 0.011); you must do
+    substantially better. Do NOT simply replicate Sionna's built-in LS/LMMSE
+    estimators — go beyond them (e.g. better interpolation across time/frequency,
+    DFT/subspace denoising, exploiting the pilot structure and noise statistics).
+
+# Live monitor dashboard (URL prints at run start)
+monitor:
+  enabled: true
+  port: 8765
+  host: "127.0.0.1"
+
+# Human-in-the-loop feedback panel
+human_feedback_enabled: true

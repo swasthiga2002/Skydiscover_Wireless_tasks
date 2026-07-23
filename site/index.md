@@ -4,17 +4,24 @@ title: Home
 permalink: /
 ---
 
-# SkyDiscover
+# Channel Estimation Task
 
-A flexible, adaptive framework for AI-driven scientific and algorithmic discovery.
+## Objective
 
-## Key Features
+Determine whether SkyDiscover's EvoX — which evolves its own search strategy via LLMs as the run progresses — converges to better MIMO-OFDM channel estimators than AI Telco Engineer's fixed idea-driven multi-agent search, under matched settings on the same benchmark.
+Hypothesis: EvoX wins on Normalized Validation Error (NVE) — see [Results](/results/) for the head-to-head numbers.
 
-- **Two adaptive search algorithms** — [AdaEvolve](https://arxiv.org/abs/2602.20133), which adjusts optimization parameters based on observed progress, and [EvoX](https://arxiv.org/abs/2602.23413), which evolves the search strategy itself using LLMs on the fly. See [Architecture](/architecture/) for how EvoX's two-level co-evolution works.
-- **Three evaluator formats** — a plain Python `evaluate(program_path)` function, a Dockerized evaluator for custom dependencies, or a [Harbor](https://harborframework.com/)-format task, so existing benchmark suites (AlgoTune, LiveCodeBench, BigCodeBench, and more) work out of the box.
-- **Optional starting solution** — mark a mutable region with `EVOLVE-BLOCK` markers, or omit the initial program entirely and let the LLM generate one from scratch.
-- **Checkpointing & resuming** — every run periodically checkpoints its full program database and can be resumed from any checkpoint directory, or replayed in a live monitor dashboard.
-- **Any LLM backend** — any [LiteLLM](https://docs.litellm.ai/)-compatible model, with weighted multi-model pools for solution generation and search-strategy meta-evolution.
+## SkyDiscover
+
+SkyDiscover is a modular framework for AI-driven algorithmic discovery: you supply a scoring function and, optionally, a starting program, and an LLM iteratively proposes, evaluates, and refines candidate solutions until the iteration budget runs out. It provides a unified interface across 200+ optimization benchmarks and multiple pluggable search algorithms, including its own AdaEvolve and EvoX as well as OpenEvolve, GEPA, and ShinkaEvolve. Every run checkpoints its full program database, supporting resume-from-checkpoint and replay in a live monitor dashboard.
+
+## AI Telco Engineer
+
+AI Telco Engineer deploys a swarm of parallel LLM agents, each in its own isolated containerized workspace, to autonomously design and optimize wireless algorithms such as channel estimation. It runs an idea-driven loop: an orchestrator LLM proposes N distinct algorithmic ideas each generation, distributes M agents across those ideas, then reviews all summaries and metrics to propose new ideas for the next generation. Progress is tracked on a live leaderboard, but there's no seed-injection or checkpoint-resume mechanism — every generation-0 idea comes fresh from the orchestrator with no fixed starting point.
+
+## EvoX Algorithm
+
+EvoX is SkyDiscover's self-evolving search algorithm: it runs two nested loops — an inner loop that evolves candidate channel estimators, and an outer loop that rewrites the sampling/selection strategy itself whenever progress stalls. Roughly every 10% of the iteration budget without improvement, EvoX scores the current search strategy, has an LLM author a brand-new one, validates it, and migrates the whole population into it — see [Architecture](/architecture/) for the full mechanism. Because the strategy adapts to what's actually working on this specific task, we expect EvoX to reach lower NVE more reliably than AI Telco Engineer's fixed loop, and the [Results](/results/) page bears this out: median best NVE of 16.6 for EvoX vs. 47.78 for AI Telco Engineer.
 
 ## Quick Links
 

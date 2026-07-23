@@ -8,12 +8,6 @@ permalink: /
 
 A flexible, adaptive framework for AI-driven scientific and algorithmic discovery.
 
-## What is SkyDiscover?
-
-SkyDiscover is a modular framework for AI-driven scientific and algorithmic discovery. It provides a unified interface for implementing, running, and fairly comparing discovery algorithms across 200+ optimization tasks — you supply a scoring function (and optionally a starting program), and an LLM iteratively proposes, evaluates, and refines candidate solutions until the budget runs out.
-
-This site tracks SkyDiscover's application to a wireless benchmark: evolving the channel-estimation stage of a MIMO-OFDM link (via [Sionna](https://nvlabs.github.io/sionna/)) to minimize Normalized Validation Error against a perfect-CSI baseline. See [Results](/results/) for a head-to-head comparison against another framework on that task.
-
 ## Key Features
 
 - **Two adaptive search algorithms** — [AdaEvolve](https://arxiv.org/abs/2602.20133), which adjusts optimization parameters based on observed progress, and [EvoX](https://arxiv.org/abs/2602.23413), which evolves the search strategy itself using LLMs on the fly. See [Architecture](/architecture/) for how EvoX's two-level co-evolution works.

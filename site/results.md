@@ -8,6 +8,10 @@ permalink: /results/
 
 **Head-to-head comparison: AI Telco Engineer vs. EvoX/SkyDiscover on the same channel-estimation benchmark, under matched settings (same physical-layer config, same single-job/single-idea/single-worker mode, same model family, same 10-generation/iteration budget).**
 
+| AI Telco Engineer — NVE per generation | EvoX / SkyDiscover — NVE per iteration |
+|:---:|:---:|
+| ![AI Telco Engineer: NVE per generation, 5 runs]({{ "/assets/images/ai_telco_nve_per_generation.png" | relative_url }}) | ![EvoX/SkyDiscover: NVE per iteration, 4 runs]({{ "/assets/images/evox_nve_per_iteration.png" | relative_url }}) |
+
 ## Channel-Estimation Benchmark
 
 Both frameworks target the same task: implement `mimo_detector(y, no)` for a 4×16 MIMO OFDM uplink (3GPP UMi channel, 5G NR LDPC, QPSK), minimizing the **Normalized Validation Error**:
@@ -44,8 +48,6 @@ Lower is better. Only the channel-estimation stage is mutable — the LMMSE equa
 
 ### NVE per generation — AI Telco Engineer
 
-![AI Telco Engineer: NVE per generation, 5 runs](/assets/images/ai_telco_nve_per_generation.png)
-
 Generation 0 is **not** a fixed baseline — AI Telco Engineer has no seed-injection mechanism, so gen0 is always the manager LLM's own first idea, which varies wildly run to run (from 34 to 6912+ NVE). Gaps in the lines are generations that failed outright (`NVE = inf`) — every one of the 5 runs hit at least one hard failure.
 
 | Gen | testrun1 | testrun2 | testrun3 | testrun4 | testrun5 |
@@ -64,8 +66,6 @@ Generation 0 is **not** a fixed baseline — AI Telco Engineer has no seed-injec
 *— = generation failed (`NVE = inf`)*
 
 ### NVE per iteration — EvoX / SkyDiscover
-
-![EvoX/SkyDiscover: NVE per iteration, 4 runs](/assets/images/evox_nve_per_iteration.png)
 
 Iteration 0 **is** a fixed baseline — the literal LS-only seed program, executed verbatim every run, always scoring NVE = 101.69. All four runs converge from the same starting point, which is what makes them directly comparable. (`testrun5` will be added once its clean re-run completes.)
 

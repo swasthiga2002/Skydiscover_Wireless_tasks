@@ -1,0 +1,10 @@
+theme: minima
+title: SkyDiscover
+description: LLM-driven co-evolutionary program discovery for wireless systems
+url: "https://swasthiga2002.github.io"
+baseurl: "/Skydiscover_Wireless_tasks"
+
+header_pages:
+  - architecture.md
+  - results.md
+  - getting-started.md

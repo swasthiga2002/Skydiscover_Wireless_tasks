@@ -43,10 +43,10 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 
 ## Run Summary
 
-| Framework | Runs compared | Model | Median best NVE | Range |
-|---|---|---|---|---|
-| **EvoX / SkyDiscover** | `evox_testrun1`–`4` | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) | **16.6** | 9.98 – 19.94 |
-| **AI Telco Engineer** | `workspace7_testrun1`–`5` | gpt-5.5 (agent + manager)* | **76.75** | 14.70 – 94.38 |
+| Framework | Runs compared | Model |
+|---|---|---|
+| **EvoX / SkyDiscover** | `evox_testrun1`–`4` | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) |
+| **AI Telco Engineer** | `workspace7_testrun1`–`5` | gpt-5.5 (agent + manager)* |
 
 \* model not independently confirmed from logs for the AI Telco Engineer runs, inferred from the project's other same-week runs.
 
@@ -61,9 +61,15 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 | 3 | 19.94 | 94.38 | gen05-0005 |
 | 4 | 9.98 | 58.72 | gen09-0009 |
 | 5 | *pending re-run* | 90.21 | gen09-0009 |
-| **Median** | **16.6** | **76.75** | |
 | **Best** | **9.98** | **14.70** | |
 | **Worst** | **19.94** | **94.38** | |
+
+### Average Best NVE (across runs)
+
+| Framework | Average Best NVE |
+|---|---|
+| **EvoX / SkyDiscover** (4 runs) | **13.75** |
+| **AI Telco Engineer** (5 runs) | **66.95** |
 
 ## NVE per generation -- AI Telco Engineer
 

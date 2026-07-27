@@ -31,10 +31,10 @@ permalink: /evaluation/
 
 ## Summary
 
-| | AI Telco Engineer (50 generations) | EvoX / SkyDiscover (40 iterations, 4 runs) |
+| | AI Telco Engineer (50 generations) | EvoX / SkyDiscover (50 iterations, 5 runs) |
 |---|---|---|
 | Evaluation calls per iteration | 1-3 (avg 1.2) | always 1 |
-| LLM calls per iteration | 4-28 (avg 8.8) | 1-6 (avg 3.4) |
+| LLM calls per iteration | 4-28 (avg 8.8) | 1-6 (avg 3.6) |
 | Sionna doc retrievals per iteration | 0-7 (avg 2.1) | 0 (context is pre-assembled into the prompt, no retrieval tool) |
 
 ## The Retry Loop, Simplified
@@ -208,7 +208,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 
 ### EvoX / SkyDiscover — per iteration
 
-*4 of 5 runs shown — `evox_testrun5` excluded (folder reused across multiple invocations; see Results page Methodology Notes). Each run also makes 1 one-time LLM call before iteration 1 (write explore/refine guidance), not counted in the rows below.*
+*All 5 runs shown. Each run also makes 1 one-time LLM call before iteration 1 (write explore/refine guidance), not counted in the rows below.*
 
 **Run 1 (`evox_testrun1`)**
 
@@ -270,10 +270,24 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
 | 10 | 1 | 1 | Generate & evaluate candidate solution |
 
+**Run 5 (`evox_testrun5`)**
+
+| Iter | Eval calls | LLM calls | Purpose |
+|---|---|---|---|
+| 1 | 1 | 1 | Generate & evaluate candidate solution |
+| 2 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
+| 3 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
+| 4 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
+| 5 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
+| 6 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
+| 7 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
+| 8 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
+| 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
+| 10 | 1 | 1 | Generate & evaluate candidate solution |
 
 ## Methodology Notes
 
 - **"LLM calls" for AI Telco Engineer** are counted by grouping consecutive `[TOOL_CALL]` log lines that share the same timestamp into one model turn (the agent can request several tools in parallel in a single turn), plus one final turn for the closing text-only message every generation ends with. This is a reconstruction from the journal log, not a framework-reported counter -- the framework's own `RUN_END tool_calls=N` field counts something else internally and does not match a simple tool-call tally, so it isn't used here.
 - **"Sionna doc retrievals"** counts calls to the `_search` and `_help` tools, which query Sionna's documentation. EvoX has no equivalent tool -- its guide-model summaries and problem context are assembled directly into the prompt from the evaluator source and config, not retrieved on demand.
 - **EvoX's per-iteration LLM calls** include, on iterations where solution progress stalled: 3 parallel guide-model calls (population/problem/strategy summaries) plus 1 call to write the new search strategy -- or more, on the one occasion (`evox_testrun4`, iteration 6) a generated strategy failed validation and needed a second write attempt.
-- **Zero retries occurred anywhere in the EvoX solution loop** across all 40 iterations in these 4 runs -- every candidate solution succeeded on its first evaluation call. This isn't a methodology artifact; it's what the logs show. The up-to-3-attempts budget exists but was never exercised in this data.
+- **Zero retries occurred anywhere in the EvoX solution loop** across all 50 iterations in these 5 runs -- every candidate solution succeeded on its first evaluation call. This isn't a methodology artifact; it's what the logs show. The up-to-3-attempts budget exists but was never exercised in this data.

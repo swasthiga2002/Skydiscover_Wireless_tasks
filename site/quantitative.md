@@ -45,12 +45,12 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 
 | Framework | Runs compared | Model |
 |---|---|---|
-| **EvoX / SkyDiscover** | `evox_testrun1`–`4` | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) |
+| **EvoX / SkyDiscover** | `evox_testrun1`–`5` | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) |
 | **AI Telco Engineer** | `workspace7_testrun1`–`5` | gpt-5.5 (agent + manager)* |
 
 \* model not independently confirmed from logs for the AI Telco Engineer runs, inferred from the project's other same-week runs.
 
-`evox_testrun5` is excluded pending a clean re-run (its folder was reused across two independent invocations -- see Methodology Notes below).
+`evox_testrun5` was originally excluded (its folder had been reused across independent invocations -- see Methodology Notes below); it's since been cleanly re-run and is included above.
 
 ### Best NVE per run
 
@@ -60,15 +60,15 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 | 2 | 11.86 | **14.70** | gen04-0004 (tied with gen06, gen08) |
 | 3 | 19.94 | 94.38 | gen05-0005 |
 | 4 | 9.98 | 58.72 | gen09-0009 |
-| 5 | *pending re-run* | 90.21 | gen09-0009 |
+| 5 | 58.27 | 90.21 | gen09-0009 |
 | **Best** | **9.98** | **14.70** | |
-| **Worst** | **19.94** | **94.38** | |
+| **Worst** | **58.27** | **94.38** | |
 
 ### Average Best NVE (across runs)
 
 | Framework | Average Best NVE |
 |---|---|
-| **EvoX / SkyDiscover** (4 runs) | **13.75** |
+| **EvoX / SkyDiscover** (5 runs) | **22.65** |
 | **AI Telco Engineer** (5 runs) | **66.95** |
 
 ## NVE per generation -- AI Telco Engineer
@@ -216,30 +216,160 @@ Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-inject
 
 *Source: `leaderboard.json` in each `workspace7_testrun*` directory -- the framework's own recorded metric per generation, not re-derived from logs.*
 
+
 ## NVE per iteration -- EvoX / SkyDiscover
 
-Iteration 0 **is** a fixed baseline -- the literal LS-only seed program, executed verbatim every run, always scoring NVE = 101.69. All four runs converge from the same starting point, which is what makes them directly comparable. (`testrun5` will be added once its clean re-run completes.)
+Iteration 0 **is** a fixed baseline -- the literal LS-only seed program, executed verbatim every run, always scoring NVE = 101.69. All five runs converge from the same starting point, which is what makes them directly comparable.
 
 | Iter | testrun1 | testrun2 | testrun3 | testrun4 | testrun5 |
 |---|---|---|---|---|---|
-| 0 | 101.69 | 101.69 | 101.69 | 101.69 | *pending* |
-| 1 | 58.46 | 222.85 | 69.44 | 45.36 | *pending* |
-| 2 | 57.82 | 104.62 | 80.99 | 17.07 | *pending* |
-| 3 | 19.70 | 28.79 | 56.32 | 23.22 | *pending* |
-| 4 | 20.74 | 27.04 | 145.32 | 17.31 | *pending* |
-| 5 | 13.49 | 29.22 | 58.20 | 9.99 | *pending* |
-| 6 | 16.56 | 27.95 | 56.20 | 10.51 | *pending* |
-| 7 | 13.22 | 18.74 | 21.68 | 10.33 | *pending* |
-| 8 | 22.22 | 12.18 | 19.94 | 11.11 | *pending* |
-| 9 | 16.39 | 11.86 | 21.47 | 10.33 | *pending* |
-| 10 | 17.30 | 14.14 | 20.98 | 10.58 | *pending* |
+| 0 | 101.69 | 101.69 | 101.69 | 101.69 | 101.69 |
+| 1 | 58.46 | 222.85 | 69.44 | 45.36 | 129.98 |
+| 2 | 57.82 | 104.62 | 80.99 | 17.07 | 96.32 |
+| 3 | 19.70 | 28.79 | 56.32 | 23.22 | 99.50 |
+| 4 | 20.74 | 27.04 | 145.32 | 17.31 | 81.04 |
+| 5 | 13.49 | 29.22 | 58.20 | 9.99 | 85.57 |
+| 6 | 16.56 | 27.95 | 56.20 | 10.51 | 84.06 |
+| 7 | 13.22 | 18.74 | 21.68 | 10.33 | 76.52 |
+| 8 | 22.22 | 12.18 | 19.94 | 11.11 | 59.51 |
+| 9 | 16.39 | 11.86 | 21.47 | 10.33 | 58.27 |
+| 10 | 17.30 | 14.14 | 20.98 | 10.58 | 58.32 |
 
-![EvoX/SkyDiscover: NVE per iteration, 4 runs]({{ "/assets/images/evox_nve_per_iteration.png?v=1" | relative_url }})
+<div class="nve-chart">
+<style>
+  .nve-chart {
+    --nc-ink: #1e2b3c; --nc-ink-soft: #5b6b80; --nc-ink-faint: #a7b3c2;
+    --nc-panel: #ffffff; --nc-line: #d3dce6; --nc-grid: #e6ecf3;
+    --nc-c1: #2a78d6; --nc-c2: #eb6834; --nc-c3: #1baf7a; --nc-c4: #eda100; --nc-c5: #e87ba4;
+    display: block; box-sizing: border-box; margin: 6px 0 14px;
+    font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; color: var(--nc-ink);
+  }
+  @media (prefers-color-scheme: dark) {
+    .nve-chart {
+      --nc-ink: #e7edf5; --nc-ink-soft: #9db0c4; --nc-ink-faint: #4d6076;
+      --nc-panel: #141f2d; --nc-line: #263344; --nc-grid: #1c2a3d;
+      --nc-c1: #3987e5; --nc-c2: #d95926; --nc-c3: #199e70; --nc-c4: #c98500; --nc-c5: #d55181;
+    }
+  }
+  .nve-chart, .nve-chart * { box-sizing: border-box; }
+  .nve-chart .nc-wrap { border: 1px solid var(--nc-line); background: var(--nc-panel); padding: 14px 14px 10px; }
+  .nve-chart svg { width: 100%; height: auto; display: block; }
+  .nve-chart .nc-grid-line { stroke: var(--nc-grid); stroke-width: 1; }
+  .nve-chart .nc-axis-text { fill: var(--nc-ink-faint); font-size: 10.5px; font-family: ui-monospace, "SF Mono", Consolas, monospace; }
+  .nve-chart .nc-series { fill: none; stroke-width: 2; }
+  .nve-chart .nc-dot { stroke: var(--nc-panel); stroke-width: 1.2; }
+  .nve-chart .nc-legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 10px; font-size: 12px; }
+  .nve-chart .nc-legend-item { display: flex; align-items: center; gap: 7px; color: var(--nc-ink-soft); }
+  .nve-chart .nc-swatch { width: 16px; height: 2px; border-radius: 1px; flex: none; }
+  .nve-chart .nc-caption { margin-top: 8px; font-size: 11.5px; color: var(--nc-ink-faint); line-height: 1.5; }
+</style>
+<div class="nc-wrap">
+<svg viewBox="0 0 720 380" role="img" aria-label="NVE per iteration across 5 EvoX runs, log scale">
+  <line class="nc-grid-line" x1="56" y1="338.6" x2="700" y2="338.6"></line>
+  <line class="nc-grid-line" x1="56" y1="177.3" x2="700" y2="177.3"></line>
+  <line class="nc-grid-line" x1="56" y1="16" x2="700" y2="16"></line>
+  <text class="nc-axis-text" x="48" y="342.1" text-anchor="end">10</text>
+  <text class="nc-axis-text" x="48" y="180.8" text-anchor="end">100</text>
+  <text class="nc-axis-text" x="48" y="19.5" text-anchor="end">1,000</text>
+  <text class="nc-axis-text" x="56.0" y="365" text-anchor="middle">0</text>
+  <text class="nc-axis-text" x="120.4" y="365" text-anchor="middle">1</text>
+  <text class="nc-axis-text" x="184.8" y="365" text-anchor="middle">2</text>
+  <text class="nc-axis-text" x="249.2" y="365" text-anchor="middle">3</text>
+  <text class="nc-axis-text" x="313.6" y="365" text-anchor="middle">4</text>
+  <text class="nc-axis-text" x="378.0" y="365" text-anchor="middle">5</text>
+  <text class="nc-axis-text" x="442.4" y="365" text-anchor="middle">6</text>
+  <text class="nc-axis-text" x="506.8" y="365" text-anchor="middle">7</text>
+  <text class="nc-axis-text" x="571.2" y="365" text-anchor="middle">8</text>
+  <text class="nc-axis-text" x="635.6" y="365" text-anchor="middle">9</text>
+  <text class="nc-axis-text" x="700.0" y="365" text-anchor="middle">10</text>
+
+  <!-- testrun1 -->
+  <polyline class="nc-series" stroke="var(--nc-c1)" points="56.0,176.1 120.4,214.9 184.8,215.7 249.2,291.1 313.6,287.5 378.0,317.6 442.4,303.3 506.8,319.1 571.2,282.7 635.6,304.0 700.0,300.2"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c1)"><title>testrun1 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="214.9" r="4" fill="var(--nc-c1)"><title>testrun1 iter1: 58.46</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="215.7" r="4" fill="var(--nc-c1)"><title>testrun1 iter2: 57.82</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="291.1" r="4" fill="var(--nc-c1)"><title>testrun1 iter3: 19.70</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="287.5" r="4" fill="var(--nc-c1)"><title>testrun1 iter4: 20.74</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="317.6" r="4" fill="var(--nc-c1)"><title>testrun1 iter5: 13.49</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="303.3" r="4" fill="var(--nc-c1)"><title>testrun1 iter6: 16.56</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="319.1" r="4" fill="var(--nc-c1)"><title>testrun1 iter7: 13.22</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="282.7" r="4" fill="var(--nc-c1)"><title>testrun1 iter8: 22.22</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="304.0" r="4" fill="var(--nc-c1)"><title>testrun1 iter9: 16.39</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="300.2" r="4" fill="var(--nc-c1)"><title>testrun1 iter10: 17.30</title></circle>
+
+  <!-- testrun2 -->
+  <polyline class="nc-series" stroke="var(--nc-c2)" points="56.0,176.1 120.4,121.2 184.8,174.1 249.2,264.5 313.6,268.9 378.0,263.5 442.4,266.6 506.8,294.6 571.2,324.8 635.6,326.7 700.0,314.3"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c2)"><title>testrun2 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="121.2" r="4" fill="var(--nc-c2)"><title>testrun2 iter1: 222.85</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="174.1" r="4" fill="var(--nc-c2)"><title>testrun2 iter2: 104.62</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="264.5" r="4" fill="var(--nc-c2)"><title>testrun2 iter3: 28.79</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="268.9" r="4" fill="var(--nc-c2)"><title>testrun2 iter4: 27.04</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="263.5" r="4" fill="var(--nc-c2)"><title>testrun2 iter5: 29.22</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="266.6" r="4" fill="var(--nc-c2)"><title>testrun2 iter6: 27.95</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="294.6" r="4" fill="var(--nc-c2)"><title>testrun2 iter7: 18.74</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="324.8" r="4" fill="var(--nc-c2)"><title>testrun2 iter8: 12.18</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="326.7" r="4" fill="var(--nc-c2)"><title>testrun2 iter9: 11.86</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="314.3" r="4" fill="var(--nc-c2)"><title>testrun2 iter10: 14.14</title></circle>
+
+  <!-- testrun3 -->
+  <polyline class="nc-series" stroke="var(--nc-c3)" points="56.0,176.1 120.4,202.9 184.8,192.1 249.2,217.5 313.6,151.1 378.0,215.2 442.4,217.7 506.8,284.4 571.2,290.3 635.6,285.1 700.0,286.7"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c3)"><title>testrun3 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="202.9" r="4" fill="var(--nc-c3)"><title>testrun3 iter1: 69.44</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="192.1" r="4" fill="var(--nc-c3)"><title>testrun3 iter2: 80.99</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="217.5" r="4" fill="var(--nc-c3)"><title>testrun3 iter3: 56.32</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="151.1" r="4" fill="var(--nc-c3)"><title>testrun3 iter4: 145.32</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="215.2" r="4" fill="var(--nc-c3)"><title>testrun3 iter5: 58.20</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="217.7" r="4" fill="var(--nc-c3)"><title>testrun3 iter6: 56.20</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="284.4" r="4" fill="var(--nc-c3)"><title>testrun3 iter7: 21.68</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="290.3" r="4" fill="var(--nc-c3)"><title>testrun3 iter8: 19.94</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="285.1" r="4" fill="var(--nc-c3)"><title>testrun3 iter9: 21.47</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="286.7" r="4" fill="var(--nc-c3)"><title>testrun3 iter10: 20.98</title></circle>
+
+  <!-- testrun4 -->
+  <polyline class="nc-series" stroke="var(--nc-c4)" points="56.0,176.1 120.4,232.7 184.8,301.2 249.2,279.6 313.6,300.2 378.0,338.7 442.4,335.1 506.8,336.3 571.2,331.2 635.6,336.3 700.0,334.7"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c4)"><title>testrun4 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="232.7" r="4" fill="var(--nc-c4)"><title>testrun4 iter1: 45.36</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="301.2" r="4" fill="var(--nc-c4)"><title>testrun4 iter2: 17.07</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="279.6" r="4" fill="var(--nc-c4)"><title>testrun4 iter3: 23.22</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="300.2" r="4" fill="var(--nc-c4)"><title>testrun4 iter4: 17.31</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="338.7" r="4" fill="var(--nc-c4)"><title>testrun4 iter5: 9.99</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="335.1" r="4" fill="var(--nc-c4)"><title>testrun4 iter6: 10.51</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="336.3" r="4" fill="var(--nc-c4)"><title>testrun4 iter7: 10.33</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="331.2" r="4" fill="var(--nc-c4)"><title>testrun4 iter8: 11.11</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="336.3" r="4" fill="var(--nc-c4)"><title>testrun4 iter9: 10.33</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="334.7" r="4" fill="var(--nc-c4)"><title>testrun4 iter10: 10.58</title></circle>
+
+  <!-- testrun5 -->
+  <polyline class="nc-series" stroke="var(--nc-c5)" points="56.0,176.1 120.4,158.9 184.8,179.9 249.2,177.7 313.6,192.0 378.0,188.2 442.4,189.5 506.8,196.1 571.2,213.7 635.6,215.1 700.0,215.1"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c5)"><title>testrun5 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="158.9" r="4" fill="var(--nc-c5)"><title>testrun5 iter1: 129.98</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="179.9" r="4" fill="var(--nc-c5)"><title>testrun5 iter2: 96.32</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="177.7" r="4" fill="var(--nc-c5)"><title>testrun5 iter3: 99.50</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="192.0" r="4" fill="var(--nc-c5)"><title>testrun5 iter4: 81.04</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="188.2" r="4" fill="var(--nc-c5)"><title>testrun5 iter5: 85.57</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="189.5" r="4" fill="var(--nc-c5)"><title>testrun5 iter6: 84.06</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="196.1" r="4" fill="var(--nc-c5)"><title>testrun5 iter7: 76.52</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="213.7" r="4" fill="var(--nc-c5)"><title>testrun5 iter8: 59.51</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="215.1" r="4" fill="var(--nc-c5)"><title>testrun5 iter9: 58.27</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="215.1" r="4" fill="var(--nc-c5)"><title>testrun5 iter10: 58.32</title></circle>
+</svg>
+<div class="nc-legend">
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c1);"></span>testrun1</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c2);"></span>testrun2</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c3);"></span>testrun3</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>testrun4</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>testrun5</div>
+</div>
+<p class="nc-caption">Y axis is log-scaled. All 5 runs start from the identical fixed LS baseline (iteration 0, NVE 101.69) — the only point where every line coincides.</p>
+</div>
+</div>
+
 
 ## Methodology Notes
 
 - **AI Telco Engineer data source: `workspace_7`, not `workspace_6`.** This page uses the `workspace7_testrun1`–5 batch, run after the eval-loop retry fix (see [Evaluation](/evaluation/)). An earlier draft of this comparison used an older `workspace_6` batch (pre-fix, with several hard-failed generations per run) -- that data is no longer used anywhere on this site.
-- **`evox_testrun5` and `evox_testrun6` folder reuse.** Both had multiple independent full runs written into the same output directory. Since checkpoints and `best/` are overwritten by filename collision (not versioned), only the *last* invocation's result survives on disk. `evox_testrun6` additionally changed a variable (guide LLM: gpt-5-mini → gpt-5.5) rather than being a clean repeat, so it's excluded from this comparison entirely.
+- **`evox_testrun5` folder reuse, now resolved.** The original `evox_testrun5` folder had multiple independent full runs written into it (checkpoints and `best/` overwritten by filename collision, not versioned), so its on-disk result didn't reliably represent a single run. It's been superseded by a clean re-run in a fresh output directory (`evox_testrun5_clean`), gpt-5.5, 10 iterations, same config as `testrun1`–`4` -- that's the `testrun5` data shown throughout this page now.
+- **`evox_testrun6` folder reuse.** Same underlying issue as the old `testrun5`, but additionally changed a variable (guide LLM: gpt-5-mini → gpt-5.5) rather than being a clean repeat, so it's excluded from this comparison entirely.
 - **No fixed baseline on the AI Telco Engineer side.** Unlike SkyDiscover's `initial_program_path`, AI Telco Engineer has no seed-injection config -- generation 0 is always the manager LLM's own first idea.
 - **No held-out re-validation on the AI Telco Engineer side.** SkyDiscover re-evaluates its best program once more on fresh random draws before reporting a final score. AI Telco Engineer's "best NVE" here is never re-validated -- so its numbers may be somewhat optimistic in the same way SkyDiscover's un-validated in-run numbers are.
 - **SNR grid density differs** (7 points/1dB step for SkyDiscover vs. 4 points/2dB step for AI Telco Engineer, same -9 to -2 dB range) -- not yet reconciled.

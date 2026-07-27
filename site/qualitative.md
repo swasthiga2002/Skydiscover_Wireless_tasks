@@ -148,7 +148,7 @@ EvoX has no per-run hypothesis assignment -- every run starts from the identical
 | 2 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 11.86 |
 | 3 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 19.94 |
 | 4 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 9.98 |
-| 5 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | *pending re-run* |
+| 5 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 58.27 |
 
 ## Methodology Notes
 

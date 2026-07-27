@@ -50,121 +50,7 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 
 Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-injection mechanism, so gen0 is always the manager LLM's own first idea, which varies wildly run to run (from 34 to 6912+ NVE).
 
-<div class="nve-chart">
-<style>
-  .nve-chart {
-    --nc-ink: #1e2b3c; --nc-ink-soft: #5b6b80; --nc-ink-faint: #a7b3c2;
-    --nc-panel: #ffffff; --nc-line: #d3dce6; --nc-grid: #e6ecf3;
-    --nc-c1: #2a78d6; --nc-c2: #eb6834; --nc-c3: #1baf7a; --nc-c4: #eda100; --nc-c5: #e87ba4;
-    display: block; box-sizing: border-box; margin: 6px 0 14px;
-    font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; color: var(--nc-ink);
-  }
-  @media (prefers-color-scheme: dark) {
-    .nve-chart {
-      --nc-ink: #e7edf5; --nc-ink-soft: #9db0c4; --nc-ink-faint: #4d6076;
-      --nc-panel: #141f2d; --nc-line: #263344; --nc-grid: #1c2a3d;
-      --nc-c1: #3987e5; --nc-c2: #d95926; --nc-c3: #199e70; --nc-c4: #c98500; --nc-c5: #d55181;
-    }
-  }
-  .nve-chart, .nve-chart * { box-sizing: border-box; }
-  .nve-chart .nc-wrap { border: 1px solid var(--nc-line); background: var(--nc-panel); padding: 14px 14px 10px; }
-  .nve-chart svg { width: 100%; height: auto; display: block; }
-  .nve-chart .nc-grid-line { stroke: var(--nc-grid); stroke-width: 1; }
-  .nve-chart .nc-axis-text { fill: var(--nc-ink-faint); font-size: 10.5px; font-family: ui-monospace, "SF Mono", Consolas, monospace; }
-  .nve-chart .nc-series { fill: none; stroke-width: 2; }
-  .nve-chart .nc-dot { stroke: var(--nc-panel); stroke-width: 1.2; }
-  .nve-chart .nc-legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 10px; font-size: 12px; }
-  .nve-chart .nc-legend-item { display: flex; align-items: center; gap: 7px; color: var(--nc-ink-soft); }
-  .nve-chart .nc-swatch { width: 16px; height: 2px; border-radius: 1px; flex: none; }
-  .nve-chart .nc-caption { margin-top: 8px; font-size: 11.5px; color: var(--nc-ink-faint); line-height: 1.5; }
-</style>
-<div class="nc-wrap">
-<svg viewBox="0 0 720 380" role="img" aria-label="NVE per generation across 5 AI Telco Engineer runs, log scale">
-  <!-- y gridlines + labels (log scale: 10, 100, 1000, 10000) -->
-  <line class="nc-grid-line" x1="56" y1="346" x2="700" y2="346"></line>
-  <line class="nc-grid-line" x1="56" y1="236" x2="700" y2="236"></line>
-  <line class="nc-grid-line" x1="56" y1="126" x2="700" y2="126"></line>
-  <line class="nc-grid-line" x1="56" y1="16" x2="700" y2="16"></line>
-  <text class="nc-axis-text" x="48" y="349.5" text-anchor="end">10</text>
-  <text class="nc-axis-text" x="48" y="239.5" text-anchor="end">100</text>
-  <text class="nc-axis-text" x="48" y="129.5" text-anchor="end">1,000</text>
-  <text class="nc-axis-text" x="48" y="19.5" text-anchor="end">10,000</text>
-  <!-- x axis labels (generation 0-9) -->
-  <text class="nc-axis-text" x="56.0" y="365" text-anchor="middle">0</text>
-  <text class="nc-axis-text" x="127.6" y="365" text-anchor="middle">1</text>
-  <text class="nc-axis-text" x="199.1" y="365" text-anchor="middle">2</text>
-  <text class="nc-axis-text" x="270.7" y="365" text-anchor="middle">3</text>
-  <text class="nc-axis-text" x="342.2" y="365" text-anchor="middle">4</text>
-  <text class="nc-axis-text" x="413.8" y="365" text-anchor="middle">5</text>
-  <text class="nc-axis-text" x="485.3" y="365" text-anchor="middle">6</text>
-  <text class="nc-axis-text" x="556.9" y="365" text-anchor="middle">7</text>
-  <text class="nc-axis-text" x="628.4" y="365" text-anchor="middle">8</text>
-  <text class="nc-axis-text" x="700.0" y="365" text-anchor="middle">9</text>
-
-  <!-- testrun1 -->
-  <polyline class="nc-series" stroke="var(--nc-c1)" points="127.6,193.7 199.1,247.5 270.7,247.5 342.2,19.5 413.8,242.4 485.3,247.5 556.9,247.5 628.4,245.4 700.0,247.4"></polyline>
-  <circle class="nc-dot" cx="127.6" cy="193.7" r="4" fill="var(--nc-c1)"><title>testrun1 gen1: 242.44</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="247.5" r="4" fill="var(--nc-c1)"><title>testrun1 gen2: 78.68</title></circle>
-  <circle class="nc-dot" cx="270.7" cy="247.5" r="4" fill="var(--nc-c1)"><title>testrun1 gen3: 78.68</title></circle>
-  <circle class="nc-dot" cx="342.2" cy="19.5" r="4" fill="var(--nc-c1)"><title>testrun1 gen4: 9291.07</title></circle>
-  <circle class="nc-dot" cx="413.8" cy="242.4" r="4" fill="var(--nc-c1)"><title>testrun1 gen5: 87.48</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="247.5" r="4" fill="var(--nc-c1)"><title>testrun1 gen6: 78.68</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="247.5" r="4" fill="var(--nc-c1)"><title>testrun1 gen7: 78.68</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="245.4" r="4" fill="var(--nc-c1)"><title>testrun1 gen8: 82.15</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="247.4" r="4" fill="var(--nc-c1)"><title>testrun1 gen9: 78.73</title></circle>
-
-  <!-- testrun2 -->
-  <polyline class="nc-series" stroke="var(--nc-c2)" points="56.0,286.9 127.6,286.5 199.1,280.0 556.9,293.7 628.4,296.6 700.0,295.1"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="286.9" r="4" fill="var(--nc-c2)"><title>testrun2 gen0: 34.49</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="286.5" r="4" fill="var(--nc-c2)"><title>testrun2 gen1: 34.74</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="280.0" r="4" fill="var(--nc-c2)"><title>testrun2 gen2: 39.77</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="293.7" r="4" fill="var(--nc-c2)"><title>testrun2 gen7: 29.88</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="296.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen8: 28.12</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="295.1" r="4" fill="var(--nc-c2)"><title>testrun2 gen9: 29.00</title></circle>
-
-  <!-- testrun3 -->
-  <polyline class="nc-series" stroke="var(--nc-c3)" points="56.0,33.6 127.6,242.4 199.1,248.8 270.7,249.8 485.3,249.8 556.9,249.8 628.4,246.9 700.0,249.8"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="33.6" r="4" fill="var(--nc-c3)"><title>testrun3 gen0: 6912.60</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="242.4" r="4" fill="var(--nc-c3)"><title>testrun3 gen1: 87.40</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="248.8" r="4" fill="var(--nc-c3)"><title>testrun3 gen2: 76.42</title></circle>
-  <circle class="nc-dot" cx="270.7" cy="249.8" r="4" fill="var(--nc-c3)"><title>testrun3 gen3: 74.91</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="249.8" r="4" fill="var(--nc-c3)"><title>testrun3 gen6: 74.91</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="249.8" r="4" fill="var(--nc-c3)"><title>testrun3 gen7: 74.91</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="246.9" r="4" fill="var(--nc-c3)"><title>testrun3 gen8: 79.57</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="249.8" r="4" fill="var(--nc-c3)"><title>testrun3 gen9: 74.91</title></circle>
-
-  <!-- testrun4 -->
-  <polyline class="nc-series" stroke="var(--nc-c4)" points="56.0,256.9 127.6,258.6 199.1,83.8 270.7,261.6 413.8,269.6 485.3,271.2 628.4,271.3"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="256.9" r="4" fill="var(--nc-c4)"><title>testrun4 gen0: 64.62</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="258.6" r="4" fill="var(--nc-c4)"><title>testrun4 gen1: 62.37</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="83.8" r="4" fill="var(--nc-c4)"><title>testrun4 gen2: 2420.44</title></circle>
-  <circle class="nc-dot" cx="270.7" cy="261.6" r="4" fill="var(--nc-c4)"><title>testrun4 gen3: 58.51</title></circle>
-  <circle class="nc-dot" cx="413.8" cy="269.6" r="4" fill="var(--nc-c4)"><title>testrun4 gen5: 49.53</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="271.2" r="4" fill="var(--nc-c4)"><title>testrun4 gen6: 47.85</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="271.3" r="4" fill="var(--nc-c4)"><title>testrun4 gen8: 47.78</title></circle>
-
-  <!-- testrun5 -->
-  <polyline class="nc-series" stroke="var(--nc-c5)" points="56.0,161.0 127.6,259.7 199.1,19.5 342.2,260.1 413.8,304.5 485.3,304.2 556.9,305.6 628.4,305.6 700.0,305.6"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="161.0" r="4" fill="var(--nc-c5)"><title>testrun5 gen0: 481.13</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="259.7" r="4" fill="var(--nc-c5)"><title>testrun5 gen1: 60.83</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="19.5" r="4" fill="var(--nc-c5)"><title>testrun5 gen2: 9291.07</title></circle>
-  <circle class="nc-dot" cx="342.2" cy="260.1" r="4" fill="var(--nc-c5)"><title>testrun5 gen4: 60.35</title></circle>
-  <circle class="nc-dot" cx="413.8" cy="304.5" r="4" fill="var(--nc-c5)"><title>testrun5 gen5: 23.83</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="304.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen6: 23.99</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="305.6" r="4" fill="var(--nc-c5)"><title>testrun5 gen7: 23.31</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="305.6" r="4" fill="var(--nc-c5)"><title>testrun5 gen8: 23.31</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="305.6" r="4" fill="var(--nc-c5)"><title>testrun5 gen9: 23.31</title></circle>
-</svg>
-<div class="nc-legend">
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c1);"></span>testrun1</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c2);"></span>testrun2</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c3);"></span>testrun3</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>testrun4</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>testrun5</div>
-</div>
-<p class="nc-caption">Y axis is log-scaled (NVE ranges from ~10 to ~9,291 across these runs). Lines connect only the generations that actually returned a metric — hover a point for its exact value. Missing generations (hard failures, <code>NVE = inf</code>): testrun1 gen0 &middot; testrun2 gens 3&ndash;6 &middot; testrun3 gens 4&ndash;5 &middot; testrun4 gens 4, 7, 9 &middot; testrun5 gen3.</p>
-</div>
-</div>
+![AI Telco Engineer: NVE per generation, 5 runs]({{ "/assets/images/ai_telco_nve_per_generation.png?v=1" | relative_url }})
 
 
 | Gen | testrun1 | testrun2 | testrun3 | testrun4 | testrun5 |
@@ -180,7 +66,7 @@ Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-inject
 | 8 | 82.15 | 28.12 | 79.57 | 47.78 | 23.31 |
 | 9 | 78.73 | 29.00 | 74.91 | — | 23.31 |
 
-*— = generation failed (`NVE = inf`) -- excluded from the chart above so the line connects straight through to the next successful generation, rather than breaking.*
+*— = generation failed (`NVE = inf`). Gaps in the chart above are these failed generations — every one of the 5 runs hit at least one hard failure.*
 
 ### NVE per iteration -- EvoX / SkyDiscover
 

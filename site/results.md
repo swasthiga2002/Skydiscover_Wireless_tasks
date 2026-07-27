@@ -10,7 +10,7 @@ permalink: /results/
 
 | AI Telco Engineer — NVE per generation | EvoX / SkyDiscover — NVE per iteration |
 |:---:|:---:|
-| ![AI Telco Engineer: NVE per generation, 5 runs]({{ "/assets/images/ai_telco_nve_per_generation.png" | relative_url }}) | ![EvoX/SkyDiscover: NVE per iteration, 4 runs]({{ "/assets/images/evox_nve_per_iteration.png" | relative_url }}) |
+| ![AI Telco Engineer: NVE per generation, 5 runs]({{ "/assets/images/ai_telco_nve_per_generation.png?v=1" | relative_url }}) | ![EvoX/SkyDiscover: NVE per iteration, 4 runs]({{ "/assets/images/evox_nve_per_iteration.png?v=1" | relative_url }}) |
 
 ## Channel-Estimation Benchmark
 

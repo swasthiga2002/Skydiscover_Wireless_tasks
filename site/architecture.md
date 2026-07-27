@@ -304,6 +304,34 @@ Each iteration's prompt is assembled from several pieces:
 
 At the meta-evolution level, EvoX additionally injects a summary of the population's current state and a batch summary of prior search strategies and how well they scored, so the LLM proposing new search strategies can see what's already been tried.
 
+## LLM Calls
+
+EvoX makes several distinct kinds of LLM calls, each drawing from a specific model pool:
+
+| # | LLM call | Model pool | Fires when | Input | Output |
+|---|---|---|---|---|---|
+| 1 | Generate a candidate solution | Solution controller's `llms` (main config `llm.models`) | Every solution iteration | Parent's code + example candidates + problem description + current metrics (+ last error, if retrying) | New candidate program (code) |
+| 2 | Summarize population / problem / past strategies (3 parallel calls) | `EvoxContextBuilder.summary_llm` (search config `llm.guide_models`) | Every time the meta-evolution level builds a prompt | Population stats · evaluator code + system message (cached) · other candidate strategies | Summarized text, folded into the prompt for call 3 |
+| 3 | Write a new search strategy | Search-strategy controller's `llms` (search config `llm.models`) | Only when solution progress stalls | Best-graded past strategy + other strategies as context + the 3 summaries above + window stats | A full new `EvolvedProgramDatabase` Python file |
+| 4 | Write explore/refine guidance | Search-strategy controller's `guide_llms` (search config `llm.guide_models`) | Once, before iteration 1 | Problem description + evaluator code + available packages | Diverge/refine guidance text |
+| 5 *(optional)* | LLM-as-judge | Either controller's `evaluator_llms`, only if `llm_as_judge: true` | Every evaluation, only if enabled | A candidate solution | A judged score |
+
+### LLM Model Pools
+
+Every `DiscoveryController` builds 3 pools automatically (`llms`, `evaluator_llms`, `guide_llms`). EvoX runs two controllers — one for solutions, one for the search strategy — so that's 6 pool objects, plus one more duplicate pool inside `EvoxContextBuilder`, for 7 total:
+
+| Pool object | Belongs to | Wraps config field | Used for |
+|---|---|---|---|
+| `llms` | Solution controller | main config `llm.models` | Call 1 — solution generation |
+| `evaluator_llms` | Solution controller | main config `llm.evaluator_models` | LLM-as-judge (idle unless enabled) |
+| `guide_llms` | Solution controller | main config `llm.guide_models` | *(not reached anywhere in the EvoX flow — idle)* |
+| `llms` | Search-strategy controller | search config `llm.models` | Call 3 — search-algorithm generation |
+| `evaluator_llms` | Search-strategy controller | search config `llm.evaluator_models` | Idle (search-strategy side has no judge) |
+| `guide_llms` | Search-strategy controller | search config `llm.guide_models` | Call 4 — variation operator generation |
+| `summary_llm` | Search-strategy controller's context builder | search config `llm.guide_models` (duplicate) | Call 2 — the 3 parallel context-summary calls |
+
+If `search.share_llm: true` is set on the main config, the search-strategy controller's `llms`/`evaluator_llms`/`guide_llms` are overwritten at runtime with copies of the solution controller's actual model configs, so the search-strategy side uses the same endpoint and credentials as the main run.
+
 ## Checkpointing & Resuming
 
 Every run periodically checkpoints the full program database — all candidate programs, their prompt history, and the current best program — to a `checkpoints/checkpoint_<iteration>/` directory, alongside a `best_program` file and `best_program_info.json` with its metrics. Checkpointing happens on a configurable interval and always at the end of a run.

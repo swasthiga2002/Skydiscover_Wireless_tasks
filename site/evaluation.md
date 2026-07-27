@@ -4,6 +4,27 @@ title: Evaluation
 permalink: /evaluation/
 ---
 
+<div class="topnav">
+<style>
+  .topnav {
+    --tn-ink: #1e2b3c; --tn-ink-soft: #5b6b80; --tn-bg: #f6f8fb; --tn-line: #d3dce6; --tn-accent: #b8611f;
+    display: flex; flex-wrap: wrap; gap: 4px 4px; align-items: center;
+    margin: 0 0 22px; padding: 8px; border: 1px solid var(--tn-line); background: var(--tn-bg);
+    font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; font-size: 13.5px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .topnav { --tn-ink: #e7edf5; --tn-ink-soft: #9db0c4; --tn-bg: #141f2d; --tn-line: #263344; --tn-accent: #eb9a51; }
+  }
+  .topnav a {
+    color: var(--tn-ink-soft); text-decoration: none; padding: 5px 10px; border-radius: 3px;
+  }
+  .topnav a:hover { color: var(--tn-ink); background: var(--tn-line); }
+  .topnav a.current { color: var(--tn-accent); font-weight: 600; }
+  .topnav .sep { color: var(--tn-line); }
+</style>
+<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/results/' | relative_url }}" class="">Results</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="current">Evaluation</a><span class="sep">/</span><a href="{{ '/getting-started/' | relative_url }}" class="">Getting Started</a>
+</div>
+
 # Evaluation
 
 **How many times each framework calls its evaluation tool, and how many LLM calls it spends getting there** — measured directly from real run logs, not from configuration alone. 5 runs x 10 iterations/generations, same channel-estimation benchmark as the [Results](/results/) page.

@@ -22,12 +22,12 @@ permalink: /evaluation/
   .topnav a.current { color: var(--tn-accent); font-weight: 600; }
   .topnav .sep { color: var(--tn-line); }
 </style>
-<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/results/' | relative_url }}" class="">Results</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="current">Evaluation</a><span class="sep">/</span><a href="{{ '/getting-started/' | relative_url }}" class="">Getting Started</a>
+<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="current">Evaluation</a><span class="sep">/</span><a href="{{ '/getting-started/' | relative_url }}" class="">Getting Started</a>
 </div>
 
 # Evaluation
 
-**How many times each framework calls its evaluation tool, and how many LLM calls it spends getting there** — measured directly from real run logs, not from configuration alone. 5 runs x 10 iterations/generations, same channel-estimation benchmark as the [Results](/results/) page.
+**How many times each framework calls its evaluation tool, and how many LLM calls it spends getting there** — measured directly from real run logs, not from configuration alone. 5 runs x 10 iterations/generations, same channel-estimation benchmark as the [Quantitative](/quantitative/) page.
 
 ## Summary
 

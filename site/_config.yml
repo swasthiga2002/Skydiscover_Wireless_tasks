@@ -6,6 +6,7 @@ baseurl: "/Skydiscover_Wireless_tasks"
 
 header_pages:
   - architecture.md
-  - results.md
+  - quantitative.md
+  - qualitative.md
   - evaluation.md
   - getting-started.md

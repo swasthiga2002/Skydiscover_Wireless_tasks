@@ -1,0 +1,239 @@
+---
+layout: page
+title: Quantitative
+permalink: /quantitative/
+---
+
+<div class="topnav">
+<style>
+  .topnav {
+    --tn-ink: #1e2b3c; --tn-ink-soft: #5b6b80; --tn-bg: #f6f8fb; --tn-line: #d3dce6; --tn-accent: #b8611f;
+    display: flex; flex-wrap: wrap; gap: 4px 4px; align-items: center;
+    margin: 0 0 22px; padding: 8px; border: 1px solid var(--tn-line); background: var(--tn-bg);
+    font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; font-size: 13.5px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .topnav { --tn-ink: #e7edf5; --tn-ink-soft: #9db0c4; --tn-bg: #141f2d; --tn-line: #263344; --tn-accent: #eb9a51; }
+  }
+  .topnav a {
+    color: var(--tn-ink-soft); text-decoration: none; padding: 5px 10px; border-radius: 3px;
+  }
+  .topnav a:hover { color: var(--tn-ink); background: var(--tn-line); }
+  .topnav a.current { color: var(--tn-accent); font-weight: 600; }
+  .topnav .sep { color: var(--tn-line); }
+</style>
+<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="current">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a><span class="sep">/</span><a href="{{ '/getting-started/' | relative_url }}" class="">Getting Started</a>
+</div>
+
+# Quantitative Results
+
+**Numbers only.** For the actual algorithms -- what each framework's best run came up with, and each run's starting hypothesis -- see [Qualitative](/qualitative/).
+
+Head-to-head comparison: AI Telco Engineer vs. EvoX/SkyDiscover on the same channel-estimation benchmark, under matched settings (same physical-layer config, same single-job/single-idea/single-worker mode, same model family, same 10-generation/iteration budget).
+
+## Channel-Estimation Benchmark
+
+Both frameworks target the same task: implement `mimo_detector(y, no)` for a 4×16 MIMO OFDM uplink (3GPP UMi channel, 5G NR LDPC, QPSK), minimizing the **Normalized Validation Error**:
+
+```
+NVE = mean over SNR points of  BLER_candidate / BLER_perfect-CSI
+```
+
+Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equalizer and APP demapper are fixed scaffold in both frameworks. Physical-layer parameters (antenna counts, FFT size, subcarrier spacing, carrier frequency, batch size, Monte-Carlo iterations) are identical between the two setups. One methodology difference remains: SkyDiscover averages NVE over 7 SNR points (-9 to -2 dB, 1 dB step); AI Telco Engineer averages over 4 (-9 to -2 dB, 2 dB step).
+
+## Run Summary
+
+| Framework | Runs compared | Model | Median best NVE | Range |
+|---|---|---|---|---|
+| **EvoX / SkyDiscover** | `evox_testrun1`–`4` | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) | **16.6** | 9.98 – 19.94 |
+| **AI Telco Engineer** | `workspace7_testrun1`–`5` | gpt-5.5 (agent + manager)* | **76.75** | 14.70 – 94.38 |
+
+\* model not independently confirmed from logs for the AI Telco Engineer runs, inferred from the project's other same-week runs.
+
+`evox_testrun5` is excluded pending a clean re-run (its folder was reused across two independent invocations -- see Methodology Notes below).
+
+### Best NVE per run
+
+| Run # | EvoX / SkyDiscover | AI Telco Engineer | AI Telco best candidate |
+|---|---|---|---|
+| 1 | 13.22 | 76.75 | gen09-0009 |
+| 2 | 11.86 | **14.70** | gen04-0004 (tied with gen06, gen08) |
+| 3 | 19.94 | 94.38 | gen05-0005 |
+| 4 | 9.98 | 58.72 | gen09-0009 |
+| 5 | *pending re-run* | 90.21 | gen09-0009 |
+| **Median** | **16.6** | **76.75** | |
+| **Best** | **9.98** | **14.70** | |
+| **Worst** | **19.94** | **94.38** | |
+
+## NVE per generation -- AI Telco Engineer
+
+Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-injection mechanism, so gen0 is always the manager LLM's own first idea, which varies wildly run to run (from 525 to 9,291 NVE). Every one of the 5 runs' 10 generations returned a real score -- no hard failures in this batch (`workspace_7`, run after the eval-loop retry fix -- see [Evaluation](/evaluation/) for why).
+
+<div class="nve-chart">
+<style>
+  .nve-chart {
+    --nc-ink: #1e2b3c; --nc-ink-soft: #5b6b80; --nc-ink-faint: #a7b3c2;
+    --nc-panel: #ffffff; --nc-line: #d3dce6; --nc-grid: #e6ecf3;
+    --nc-c1: #2a78d6; --nc-c2: #eb6834; --nc-c3: #1baf7a; --nc-c4: #eda100; --nc-c5: #e87ba4;
+    display: block; box-sizing: border-box; margin: 6px 0 14px;
+    font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; color: var(--nc-ink);
+  }
+  @media (prefers-color-scheme: dark) {
+    .nve-chart {
+      --nc-ink: #e7edf5; --nc-ink-soft: #9db0c4; --nc-ink-faint: #4d6076;
+      --nc-panel: #141f2d; --nc-line: #263344; --nc-grid: #1c2a3d;
+      --nc-c1: #3987e5; --nc-c2: #d95926; --nc-c3: #199e70; --nc-c4: #c98500; --nc-c5: #d55181;
+    }
+  }
+  .nve-chart, .nve-chart * { box-sizing: border-box; }
+  .nve-chart .nc-wrap { border: 1px solid var(--nc-line); background: var(--nc-panel); padding: 14px 14px 10px; }
+  .nve-chart svg { width: 100%; height: auto; display: block; }
+  .nve-chart .nc-grid-line { stroke: var(--nc-grid); stroke-width: 1; }
+  .nve-chart .nc-axis-text { fill: var(--nc-ink-faint); font-size: 10.5px; font-family: ui-monospace, "SF Mono", Consolas, monospace; }
+  .nve-chart .nc-series { fill: none; stroke-width: 2; }
+  .nve-chart .nc-dot { stroke: var(--nc-panel); stroke-width: 1.2; }
+  .nve-chart .nc-legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 10px; font-size: 12px; }
+  .nve-chart .nc-legend-item { display: flex; align-items: center; gap: 7px; color: var(--nc-ink-soft); }
+  .nve-chart .nc-swatch { width: 16px; height: 2px; border-radius: 1px; flex: none; }
+  .nve-chart .nc-caption { margin-top: 8px; font-size: 11.5px; color: var(--nc-ink-faint); line-height: 1.5; }
+</style>
+<div class="nc-wrap">
+<svg viewBox="0 0 720 380" role="img" aria-label="NVE per generation across 5 AI Telco Engineer runs (workspace_7), log scale">
+  <line class="nc-grid-line" x1="56" y1="346" x2="700" y2="346"></line>
+  <line class="nc-grid-line" x1="56" y1="236" x2="700" y2="236"></line>
+  <line class="nc-grid-line" x1="56" y1="126" x2="700" y2="126"></line>
+  <line class="nc-grid-line" x1="56" y1="16" x2="700" y2="16"></line>
+  <text class="nc-axis-text" x="48" y="349.5" text-anchor="end">10</text>
+  <text class="nc-axis-text" x="48" y="239.5" text-anchor="end">100</text>
+  <text class="nc-axis-text" x="48" y="129.5" text-anchor="end">1,000</text>
+  <text class="nc-axis-text" x="48" y="19.5" text-anchor="end">10,000</text>
+  <text class="nc-axis-text" x="56.0" y="365" text-anchor="middle">0</text>
+  <text class="nc-axis-text" x="127.6" y="365" text-anchor="middle">1</text>
+  <text class="nc-axis-text" x="199.1" y="365" text-anchor="middle">2</text>
+  <text class="nc-axis-text" x="270.7" y="365" text-anchor="middle">3</text>
+  <text class="nc-axis-text" x="342.2" y="365" text-anchor="middle">4</text>
+  <text class="nc-axis-text" x="413.8" y="365" text-anchor="middle">5</text>
+  <text class="nc-axis-text" x="485.3" y="365" text-anchor="middle">6</text>
+  <text class="nc-axis-text" x="556.9" y="365" text-anchor="middle">7</text>
+  <text class="nc-axis-text" x="628.4" y="365" text-anchor="middle">8</text>
+  <text class="nc-axis-text" x="700.0" y="365" text-anchor="middle">9</text>
+
+  <!-- testrun1 -->
+  <polyline class="nc-series" stroke="var(--nc-c1)" points="56.0,69.4 127.6,242.9 199.1,239.9 270.7,242.8 342.2,242.9 413.8,247.3 485.3,246.8 556.9,243.7 628.4,246.4 700.0,248.6"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="69.4" r="4" fill="var(--nc-c1)"><title>testrun1 gen0: 3269.05</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="242.9" r="4" fill="var(--nc-c1)"><title>testrun1 gen1: 86.63</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="239.9" r="4" fill="var(--nc-c1)"><title>testrun1 gen2: 92.08</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="242.8" r="4" fill="var(--nc-c1)"><title>testrun1 gen3: 86.67</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="242.9" r="4" fill="var(--nc-c1)"><title>testrun1 gen4: 86.63</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="247.3" r="4" fill="var(--nc-c1)"><title>testrun1 gen5: 78.88</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="246.8" r="4" fill="var(--nc-c1)"><title>testrun1 gen6: 79.73</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="243.7" r="4" fill="var(--nc-c1)"><title>testrun1 gen7: 85.12</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="246.4" r="4" fill="var(--nc-c1)"><title>testrun1 gen8: 80.40</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="248.6" r="4" fill="var(--nc-c1)"><title>testrun1 gen9: 76.75</title></circle>
+
+  <!-- testrun2 -->
+  <polyline class="nc-series" stroke="var(--nc-c2)" points="56.0,64.6 127.6,310.8 199.1,324.0 270.7,231.1 342.2,327.6 413.8,324.0 485.3,327.6 556.9,325.0 628.4,327.6 700.0,327.5"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="64.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen0: 3616.34</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="310.8" r="4" fill="var(--nc-c2)"><title>testrun2 gen1: 20.89</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="324.0" r="4" fill="var(--nc-c2)"><title>testrun2 gen2: 15.84</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="231.1" r="4" fill="var(--nc-c2)"><title>testrun2 gen3: 110.70</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="327.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen4: 14.70</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="324.0" r="4" fill="var(--nc-c2)"><title>testrun2 gen5: 15.84</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="327.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen6: 14.70</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="325.0" r="4" fill="var(--nc-c2)"><title>testrun2 gen7: 15.51</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="327.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen8: 14.70</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="327.5" r="4" fill="var(--nc-c2)"><title>testrun2 gen9: 14.72</title></circle>
+
+  <!-- testrun3 -->
+  <polyline class="nc-series" stroke="var(--nc-c3)" points="56.0,156.7 127.6,66.7 199.1,224.6 270.7,238.1 342.2,238.5 413.8,238.8 485.3,238.6 556.9,238.0 628.4,238.2 700.0,238.1"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="156.7" r="4" fill="var(--nc-c3)"><title>testrun3 gen0: 525.38</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="66.7" r="4" fill="var(--nc-c3)"><title>testrun3 gen1: 3458.74</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="224.6" r="4" fill="var(--nc-c3)"><title>testrun3 gen2: 127.01</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="238.1" r="4" fill="var(--nc-c3)"><title>testrun3 gen3: 95.70</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="238.5" r="4" fill="var(--nc-c3)"><title>testrun3 gen4: 94.90</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="238.8" r="4" fill="var(--nc-c3)"><title>testrun3 gen5: 94.38</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="238.6" r="4" fill="var(--nc-c3)"><title>testrun3 gen6: 94.62</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="238.0" r="4" fill="var(--nc-c3)"><title>testrun3 gen7: 95.94</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="238.2" r="4" fill="var(--nc-c3)"><title>testrun3 gen8: 95.56</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="238.1" r="4" fill="var(--nc-c3)"><title>testrun3 gen9: 95.68</title></circle>
+
+  <!-- testrun4 -->
+  <polyline class="nc-series" stroke="var(--nc-c4)" points="56.0,42.8 127.6,171.9 199.1,236.1 270.7,178.7 342.2,233.8 413.8,238.2 485.3,231.4 556.9,238.2 628.4,237.3 700.0,261.4"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="42.8" r="4" fill="var(--nc-c4)"><title>testrun4 gen0: 5712.23</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="171.9" r="4" fill="var(--nc-c4)"><title>testrun4 gen1: 382.42</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="236.1" r="4" fill="var(--nc-c4)"><title>testrun4 gen2: 99.74</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="178.7" r="4" fill="var(--nc-c4)"><title>testrun4 gen3: 331.91</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="233.8" r="4" fill="var(--nc-c4)"><title>testrun4 gen4: 104.68</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="238.2" r="4" fill="var(--nc-c4)"><title>testrun4 gen5: 95.47</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="231.4" r="4" fill="var(--nc-c4)"><title>testrun4 gen6: 110.01</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="238.2" r="4" fill="var(--nc-c4)"><title>testrun4 gen7: 95.47</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="237.3" r="4" fill="var(--nc-c4)"><title>testrun4 gen8: 97.30</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="261.4" r="4" fill="var(--nc-c4)"><title>testrun4 gen9: 58.72</title></circle>
+
+  <!-- testrun5 -->
+  <polyline class="nc-series" stroke="var(--nc-c5)" points="56.0,19.5 127.6,197.7 199.1,197.0 270.7,238.0 342.2,238.2 413.8,238.2 485.3,238.1 556.9,238.2 628.4,238.2 700.0,240.9"></polyline>
+  <circle class="nc-dot" cx="56.0" cy="19.5" r="4" fill="var(--nc-c5)"><title>testrun5 gen0: 9291.07</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="197.7" r="4" fill="var(--nc-c5)"><title>testrun5 gen1: 222.96</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="197.0" r="4" fill="var(--nc-c5)"><title>testrun5 gen2: 226.20</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="238.0" r="4" fill="var(--nc-c5)"><title>testrun5 gen3: 95.90</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="238.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen4: 95.47</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="238.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen5: 95.52</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="238.1" r="4" fill="var(--nc-c5)"><title>testrun5 gen6: 95.79</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="238.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen7: 95.47</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="238.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen8: 95.47</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="240.9" r="4" fill="var(--nc-c5)"><title>testrun5 gen9: 90.21</title></circle>
+</svg>
+<div class="nc-legend">
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c1);"></span>testrun1</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c2);"></span>testrun2</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c3);"></span>testrun3</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>testrun4</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>testrun5</div>
+</div>
+<p class="nc-caption">Y axis is log-scaled (NVE ranges from ~14.7 to ~9,291 across these runs). Hover a point for its exact value. All 10 generations succeeded in every one of these 5 runs — no missing points, unlike the earlier `workspace_6` batch run before the eval-loop retry fix.</p>
+</div>
+</div>
+
+
+| Gen | testrun1 | testrun2 | testrun3 | testrun4 | testrun5 |
+|---|---|---|---|---|---|
+| 0 | 3269.05 | 3616.34 | 525.38 | 5712.23 | 9291.07 |
+| 1 | 86.63 | 20.89 | 3458.74 | 382.42 | 222.96 |
+| 2 | 92.08 | 15.84 | 127.01 | 99.74 | 226.20 |
+| 3 | 86.67 | 110.70 | 95.70 | 331.91 | 95.90 |
+| 4 | 86.63 | 14.70 | 94.90 | 104.68 | 95.47 |
+| 5 | 78.88 | 15.84 | 94.38 | 95.47 | 95.52 |
+| 6 | 79.73 | 14.70 | 94.62 | 110.01 | 95.79 |
+| 7 | 85.12 | 15.51 | 95.94 | 95.47 | 95.47 |
+| 8 | 80.40 | 14.70 | 95.56 | 97.30 | 95.47 |
+| 9 | 76.75 | 14.72 | 95.68 | 58.72 | 90.21 |
+
+*Source: `leaderboard.json` in each `workspace7_testrun*` directory -- the framework's own recorded metric per generation, not re-derived from logs.*
+
+## NVE per iteration -- EvoX / SkyDiscover
+
+Iteration 0 **is** a fixed baseline -- the literal LS-only seed program, executed verbatim every run, always scoring NVE = 101.69. All four runs converge from the same starting point, which is what makes them directly comparable. (`testrun5` will be added once its clean re-run completes.)
+
+| Iter | testrun1 | testrun2 | testrun3 | testrun4 | testrun5 |
+|---|---|---|---|---|---|
+| 0 | 101.69 | 101.69 | 101.69 | 101.69 | *pending* |
+| 1 | 58.46 | 222.85 | 69.44 | 45.36 | *pending* |
+| 2 | 57.82 | 104.62 | 80.99 | 17.07 | *pending* |
+| 3 | 19.70 | 28.79 | 56.32 | 23.22 | *pending* |
+| 4 | 20.74 | 27.04 | 145.32 | 17.31 | *pending* |
+| 5 | 13.49 | 29.22 | 58.20 | 9.99 | *pending* |
+| 6 | 16.56 | 27.95 | 56.20 | 10.51 | *pending* |
+| 7 | 13.22 | 18.74 | 21.68 | 10.33 | *pending* |
+| 8 | 22.22 | 12.18 | 19.94 | 11.11 | *pending* |
+| 9 | 16.39 | 11.86 | 21.47 | 10.33 | *pending* |
+| 10 | 17.30 | 14.14 | 20.98 | 10.58 | *pending* |
+
+![EvoX/SkyDiscover: NVE per iteration, 4 runs]({{ "/assets/images/evox_nve_per_iteration.png?v=1" | relative_url }})
+
+## Methodology Notes
+
+- **AI Telco Engineer data source: `workspace_7`, not `workspace_6`.** This page uses the `workspace7_testrun1`–5 batch, run after the eval-loop retry fix (see [Evaluation](/evaluation/)). An earlier draft of this comparison used an older `workspace_6` batch (pre-fix, with several hard-failed generations per run) -- that data is no longer used anywhere on this site.
+- **`evox_testrun5` and `evox_testrun6` folder reuse.** Both had multiple independent full runs written into the same output directory. Since checkpoints and `best/` are overwritten by filename collision (not versioned), only the *last* invocation's result survives on disk. `evox_testrun6` additionally changed a variable (guide LLM: gpt-5-mini → gpt-5.5) rather than being a clean repeat, so it's excluded from this comparison entirely.
+- **No fixed baseline on the AI Telco Engineer side.** Unlike SkyDiscover's `initial_program_path`, AI Telco Engineer has no seed-injection config -- generation 0 is always the manager LLM's own first idea.
+- **No held-out re-validation on the AI Telco Engineer side.** SkyDiscover re-evaluates its best program once more on fresh random draws before reporting a final score. AI Telco Engineer's "best NVE" here is never re-validated -- so its numbers may be somewhat optimistic in the same way SkyDiscover's un-validated in-run numbers are.
+- **SNR grid density differs** (7 points/1dB step for SkyDiscover vs. 4 points/2dB step for AI Telco Engineer, same -9 to -2 dB range) -- not yet reconciled.

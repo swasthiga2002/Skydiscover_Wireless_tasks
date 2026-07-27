@@ -52,6 +52,15 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 
 `evox_testrun5` was originally excluded (its folder had been reused across independent invocations -- see Methodology Notes below); it's since been cleanly re-run and is included above.
 
+### Cost & Run Time
+
+| Framework | Average Cost | Average Run Time |
+|---|---|---|
+| **EvoX / SkyDiscover** | **$2.34** | **43.2 min** |
+| **AI Telco Engineer** | **$4.43** | **45.8 min** |
+
+EvoX's average is computed from 4 of its 5 runs (`testrun1`, `2`, `3`, `5`: $1.85, $1.59, $3.88, $2.05) -- `testrun4`'s cost wasn't captured. AI Telco Engineer's average is $22.17 (two summed cost categories, likely agent + manager spend) across all 5 runs, divided by 5. Run time is wall-clock duration measured directly from each run's own logs (first to last timestamp), not self-reported.
+
 ### Best NVE per run
 
 | Run # | EvoX / SkyDiscover | AI Telco Engineer | AI Telco best candidate |

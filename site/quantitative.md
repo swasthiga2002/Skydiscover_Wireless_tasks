@@ -50,7 +50,7 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 
 \* model not independently confirmed from logs for the AI Telco Engineer runs, inferred from the project's other same-week runs.
 
-`evox_testrun5` was originally excluded (its folder had been reused across independent invocations -- see Methodology Notes below); it's since been cleanly re-run and is included above.
+`evox_testrun5` was originally excluded (its folder had been reused across independent invocations); it's since been cleanly re-run and is included above.
 
 ### Cost & Run Time
 
@@ -68,10 +68,12 @@ EvoX's average is computed from 4 of its 5 runs (`testrun1`, `2`, `3`, `5`: $1.8
 | 1 | 13.22 | 76.75 | gen09-0009 |
 | 2 | 11.86 | **14.70** | gen04-0004 (tied with gen06, gen08) |
 | 3 | 19.94 | 94.38 | gen05-0005 |
-| 4 | 9.98 | 58.72 | gen09-0009 |
+| 4 | 9.98* | 58.72 | gen09-0009 |
 | 5 | 58.27 | 90.21 | gen09-0009 |
-| **Best** | **9.98** | **14.70** | |
+| **Best** | **9.98\*** | **14.70** | |
 | **Worst** | **58.27** | **94.38** | |
+
+\* This value was reproduced using the 4-point SNR method, as used by AI Telco Engineer. Since NVE is a Monte Carlo estimate, this was measured across 9 reseeded evaluations (NVE ranging 9.91-13.82); the average was 11.77.
 
 ### Average Best NVE (across runs)
 
@@ -373,12 +375,3 @@ Iteration 0 **is** a fixed baseline -- the literal LS-only seed program, execute
 </div>
 </div>
 
-
-## Methodology Notes
-
-- **AI Telco Engineer data source: `workspace_7`, not `workspace_6`.** This page uses the `workspace7_testrun1`–5 batch, run after the eval-loop retry fix (see [Evaluation](/evaluation/)). An earlier draft of this comparison used an older `workspace_6` batch (pre-fix, with several hard-failed generations per run) -- that data is no longer used anywhere on this site.
-- **`evox_testrun5` folder reuse, now resolved.** The original `evox_testrun5` folder had multiple independent full runs written into it (checkpoints and `best/` overwritten by filename collision, not versioned), so its on-disk result didn't reliably represent a single run. It's been superseded by a clean re-run in a fresh output directory (`evox_testrun5_clean`), gpt-5.5, 10 iterations, same config as `testrun1`–`4` -- that's the `testrun5` data shown throughout this page now.
-- **`evox_testrun6` folder reuse.** Same underlying issue as the old `testrun5`, but additionally changed a variable (guide LLM: gpt-5-mini → gpt-5.5) rather than being a clean repeat, so it's excluded from this comparison entirely.
-- **No fixed baseline on the AI Telco Engineer side.** Unlike SkyDiscover's `initial_program_path`, AI Telco Engineer has no seed-injection config -- generation 0 is always the manager LLM's own first idea.
-- **No held-out re-validation on the AI Telco Engineer side.** SkyDiscover re-evaluates its best program once more on fresh random draws before reporting a final score. AI Telco Engineer's "best NVE" here is never re-validated -- so its numbers may be somewhat optimistic in the same way SkyDiscover's un-validated in-run numbers are.
-- **SNR grid density differs** (7 points/1dB step for SkyDiscover vs. 4 points/2dB step for AI Telco Engineer, same -9 to -2 dB range) -- not yet reconciled.

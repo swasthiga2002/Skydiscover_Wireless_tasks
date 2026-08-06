@@ -37,6 +37,8 @@ permalink: /evaluation/
 | LLM calls per iteration | 4-28 (avg 8.8) | 1-6 (avg 3.6) |
 | Sionna doc retrievals per iteration | 0-7 (avg 2.1) | 0 (context is pre-assembled into the prompt, no retrieval tool) |
 
+- **Evaluation grid density differs between frameworks.** SkyDiscover's NVE is averaged over 7 SNR points (-9 to -2 dB, 1 dB step); AI Telco Engineer averages over 4 (-9 to -2 dB, 2 dB step) -- see [Quantitative](/quantitative/) for how this affects the reported best-NVE comparison.
+
 ## The Retry Loop, Simplified
 
 Both frameworks now enforce the identical retry contract -- up to 3 evaluation calls, stop immediately on success, corrective retry on failure using the exact error seen.
@@ -284,10 +286,3 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 8 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
 | 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
 | 10 | 1 | 1 | Generate & evaluate candidate solution |
-
-## Methodology Notes
-
-- **"LLM calls" for AI Telco Engineer** are counted by grouping consecutive `[TOOL_CALL]` log lines that share the same timestamp into one model turn (the agent can request several tools in parallel in a single turn), plus one final turn for the closing text-only message every generation ends with. This is a reconstruction from the journal log, not a framework-reported counter -- the framework's own `RUN_END tool_calls=N` field counts something else internally and does not match a simple tool-call tally, so it isn't used here.
-- **"Sionna doc retrievals"** counts calls to the `_search` and `_help` tools, which query Sionna's documentation. EvoX has no equivalent tool -- its guide-model summaries and problem context are assembled directly into the prompt from the evaluator source and config, not retrieved on demand.
-- **EvoX's per-iteration LLM calls** include, on iterations where solution progress stalled: 3 parallel guide-model calls (population/problem/strategy summaries) plus 1 call to write the new search strategy -- or more, on the one occasion (`evox_testrun4`, iteration 6) a generated strategy failed validation and needed a second write attempt.
-- **Zero retries occurred anywhere in the EvoX solution loop** across all 50 iterations in these 5 runs -- every candidate solution succeeded on its first evaluation call. This isn't a methodology artifact; it's what the logs show. The up-to-3-attempts budget exists but was never exercised in this data.

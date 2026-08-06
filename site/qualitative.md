@@ -38,7 +38,7 @@ permalink: /qualitative/
 | Approach | LS seed → delay-domain Wiener PDP shrinkage → RX-antenna spatial covariance eigenshrinkage → 5-tap time smoothing → residual-based error-variance calibration | LS seed → pilot-only empirical-Bayes GP/Wiener estimator with a bank of candidate delay-Doppler correlation kernels (multiple frequency/Doppler profiles), soft-selected per link/receive-chain by a GP-marginal-likelihood-style score, blended with the LS estimate → one decision-directed refinement pass using high-confidence data REs as weighted virtual pilots → error-variance calibration |
 | Code size | ~55 lines | ~407 lines |
 
-The gap between the two frameworks' best runs narrows substantially once AI Telco Engineer's data is corrected to the `workspace_7` batch (see Methodology Notes on the [Quantitative](/quantitative/) page): 9.985 vs. 14.70, not the much wider margin implied by the earlier `workspace_6` batch. EvoX's winning solution is still the simpler, more direct pipeline -- no runtime branching or candidate selection -- while AI Telco Engineer's winner explicitly builds and scores several candidate covariance kernels per call before committing to one.
+The gap between the two frameworks' best runs narrows substantially once AI Telco Engineer's data is corrected to the `workspace_7` batch (see the [Quantitative](/quantitative/) page): 9.985 vs. 14.70, not the much wider margin implied by the earlier `workspace_6` batch. EvoX's winning solution is still the simpler, more direct pipeline -- no runtime branching or candidate selection -- while AI Telco Engineer's winner explicitly builds and scores several candidate covariance kernels per call before committing to one.
 
 <details>
 <summary><strong>SkyDiscover best (evox_testrun4, iteration 5) -- click to expand</strong></summary>
@@ -152,6 +152,6 @@ EvoX has no per-run hypothesis assignment -- every run starts from the identical
 
 ## Methodology Notes
 
-- **AI Telco Engineer data source: `workspace_7`, not `workspace_6`.** See the [Quantitative](/quantitative/) page's Methodology Notes for why -- in short, `workspace_7` is the correct/current batch (run after the eval-loop retry fix), and an earlier draft of this comparison mistakenly used an older `workspace_6` batch.
+- **AI Telco Engineer data source: `workspace_7`, not `workspace_6`.** See the [Quantitative](/quantitative/) page for why -- in short, `workspace_7` is the correct/current batch (run after the eval-loop retry fix), and an earlier draft of this comparison mistakenly used an older `workspace_6` batch.
 - **Zero hard failures in `workspace_7`.** Every one of the 5 runs' 10 generations returned a real score. This is a qualitative difference from the pre-fix behavior, not just a quantitative one -- see [Evaluation](/evaluation/) for the retry-loop mechanism responsible.
 - **All 5 AI Telco hypotheses converge on the same algorithmic family** (delay-Doppler transform-domain denoising + decision-directed refinement), assigned independently by the manager LLM without seeing each other. EvoX has no equivalent diversity mechanism at the hypothesis level -- its exploration happens entirely through the search-strategy meta-evolution described on the [Architecture](/architecture/) page.

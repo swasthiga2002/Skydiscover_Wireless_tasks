@@ -45,12 +45,12 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 
 | Framework | Runs compared | Model |
 |---|---|---|
-| **EvoX / SkyDiscover** | `evox_testrun1`–`5` | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) |
-| **AI Telco Engineer** | `workspace7_testrun1`–`5` | gpt-5.5 (agent + manager)* |
+| **EvoX / SkyDiscover** | Run 1–5 | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) |
+| **AI Telco Engineer** | Run 1–5 | gpt-5.5 (agent + manager)* |
 
 \* model not independently confirmed from logs for the AI Telco Engineer runs, inferred from the project's other same-week runs.
 
-`evox_testrun5` was originally excluded (its folder had been reused across independent invocations); it's since been cleanly re-run and is included above.
+Run 5 was originally excluded because its results had gotten mixed up with a separate run; it's since been cleanly re-run and is included above.
 
 ### Cost & Run Time
 
@@ -59,21 +59,21 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 | **EvoX / SkyDiscover** | **$2.34** | **43.2 min** |
 | **AI Telco Engineer** | **$4.43** | **45.8 min** |
 
-EvoX's average is computed from 4 of its 5 runs (`testrun1`, `2`, `3`, `5`: $1.85, $1.59, $3.88, $2.05) -- `testrun4`'s cost wasn't captured. AI Telco Engineer's average is $22.17 (two summed cost categories, likely agent + manager spend) across all 5 runs, divided by 5. Run time is wall-clock duration measured directly from each run's own logs (first to last timestamp), not self-reported.
+EvoX's average is computed from 4 of its 5 runs (Runs 1, 2, 3, 5: $1.85, $1.59, $3.88, $2.05) -- Run 4's cost wasn't captured. AI Telco Engineer's average is $22.17 (two summed cost categories, likely agent + manager spend) across all 5 runs, divided by 5. Run time is wall-clock duration measured directly from each run's own logs (first to last timestamp), not self-reported.
 
 ### Best NVE per run
 
-| Run # | EvoX / SkyDiscover | AI Telco Engineer | AI Telco best candidate |
-|---|---|---|---|
-| 1 | 13.22 | 76.75 | gen09-0009 |
-| 2 | 11.86 | **14.70** | gen04-0004 (tied with gen06, gen08) |
-| 3 | 19.94 | 94.38 | gen05-0005 |
-| 4 | 9.98* | 58.72 | gen09-0009 |
-| 5 | 58.27 | 90.21 | gen09-0009 |
-| **Best** | **9.98\*** | **14.70** | |
-| **Worst** | **58.27** | **94.38** | |
+| Run # | EvoX / SkyDiscover | AI Telco Engineer |
+|---|---|---|
+| 1 | 13.22 | 76.75 |
+| 2 | 11.86 | **14.70** |
+| 3 | 19.94 | 94.38 |
+| 4 | 9.98* | 58.72 |
+| 5 | 58.27 | 90.21 |
+| **Best** | **9.98\*** | **14.70** |
+| **Worst** | **58.27** | **94.38** |
 
-\* This value was reproduced using the 4-point SNR method, as used by AI Telco Engineer. Since NVE is a Monte Carlo estimate, this was measured across 9 reseeded evaluations (NVE ranging 9.91-13.82); the average was 11.77.
+\* This value was reproduced using the 4-point SNR method, as used by AI Telco Engineer. Since NVE is a Monte Carlo estimate, this was measured across 10 reseeded evaluations; the average was 11.77.
 
 ### Average Best NVE (across runs)
 
@@ -84,7 +84,7 @@ EvoX's average is computed from 4 of its 5 runs (`testrun1`, `2`, `3`, `5`: $1.8
 
 ## NVE per generation -- AI Telco Engineer
 
-Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-injection mechanism, so gen0 is always the manager LLM's own first idea, which varies wildly run to run (from 525 to 9,291 NVE). Every one of the 5 runs' 10 generations returned a real score -- no hard failures in this batch (`workspace_7`, run after the eval-loop retry fix -- see [Evaluation](/evaluation/) for why).
+Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-injection mechanism, so gen0 is always the manager LLM's own first idea, which varies wildly run to run (from 525 to 9,291 NVE). Every one of the 5 runs' 10 generations returned a real score -- no hard failures in this batch of runs, taken after an eval-loop bug fix -- see [Evaluation](/evaluation/) for why).
 
 <div class="nve-chart">
 <style>
@@ -115,7 +115,7 @@ Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-inject
   .nve-chart .nc-caption { margin-top: 8px; font-size: 11.5px; color: var(--nc-ink-faint); line-height: 1.5; }
 </style>
 <div class="nc-wrap">
-<svg viewBox="0 0 720 380" role="img" aria-label="NVE per generation across 5 AI Telco Engineer runs (workspace_7), log scale">
+<svg viewBox="0 0 720 380" role="img" aria-label="NVE per generation across 5 AI Telco Engineer runs, log scale">
   <line class="nc-grid-line" x1="56" y1="346" x2="700" y2="346"></line>
   <line class="nc-grid-line" x1="56" y1="236" x2="700" y2="236"></line>
   <line class="nc-grid-line" x1="56" y1="126" x2="700" y2="126"></line>
@@ -135,84 +135,84 @@ Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-inject
   <text class="nc-axis-text" x="628.4" y="365" text-anchor="middle">8</text>
   <text class="nc-axis-text" x="700.0" y="365" text-anchor="middle">9</text>
 
-  <!-- testrun1 -->
+  <!-- Run 1 -->
   <polyline class="nc-series" stroke="var(--nc-c1)" points="56.0,69.4 127.6,242.9 199.1,239.9 270.7,242.8 342.2,242.9 413.8,247.3 485.3,246.8 556.9,243.7 628.4,246.4 700.0,248.6"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="69.4" r="4" fill="var(--nc-c1)"><title>testrun1 gen0: 3269.05</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="242.9" r="4" fill="var(--nc-c1)"><title>testrun1 gen1: 86.63</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="239.9" r="4" fill="var(--nc-c1)"><title>testrun1 gen2: 92.08</title></circle>
-  <circle class="nc-dot" cx="270.7" cy="242.8" r="4" fill="var(--nc-c1)"><title>testrun1 gen3: 86.67</title></circle>
-  <circle class="nc-dot" cx="342.2" cy="242.9" r="4" fill="var(--nc-c1)"><title>testrun1 gen4: 86.63</title></circle>
-  <circle class="nc-dot" cx="413.8" cy="247.3" r="4" fill="var(--nc-c1)"><title>testrun1 gen5: 78.88</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="246.8" r="4" fill="var(--nc-c1)"><title>testrun1 gen6: 79.73</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="243.7" r="4" fill="var(--nc-c1)"><title>testrun1 gen7: 85.12</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="246.4" r="4" fill="var(--nc-c1)"><title>testrun1 gen8: 80.40</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="248.6" r="4" fill="var(--nc-c1)"><title>testrun1 gen9: 76.75</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="69.4" r="4" fill="var(--nc-c1)"><title>Run 1 gen0: 3269.05</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="242.9" r="4" fill="var(--nc-c1)"><title>Run 1 gen1: 86.63</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="239.9" r="4" fill="var(--nc-c1)"><title>Run 1 gen2: 92.08</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="242.8" r="4" fill="var(--nc-c1)"><title>Run 1 gen3: 86.67</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="242.9" r="4" fill="var(--nc-c1)"><title>Run 1 gen4: 86.63</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="247.3" r="4" fill="var(--nc-c1)"><title>Run 1 gen5: 78.88</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="246.8" r="4" fill="var(--nc-c1)"><title>Run 1 gen6: 79.73</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="243.7" r="4" fill="var(--nc-c1)"><title>Run 1 gen7: 85.12</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="246.4" r="4" fill="var(--nc-c1)"><title>Run 1 gen8: 80.40</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="248.6" r="4" fill="var(--nc-c1)"><title>Run 1 gen9: 76.75</title></circle>
 
-  <!-- testrun2 -->
+  <!-- Run 2 -->
   <polyline class="nc-series" stroke="var(--nc-c2)" points="56.0,64.6 127.6,310.8 199.1,324.0 270.7,231.1 342.2,327.6 413.8,324.0 485.3,327.6 556.9,325.0 628.4,327.6 700.0,327.5"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="64.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen0: 3616.34</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="310.8" r="4" fill="var(--nc-c2)"><title>testrun2 gen1: 20.89</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="324.0" r="4" fill="var(--nc-c2)"><title>testrun2 gen2: 15.84</title></circle>
-  <circle class="nc-dot" cx="270.7" cy="231.1" r="4" fill="var(--nc-c2)"><title>testrun2 gen3: 110.70</title></circle>
-  <circle class="nc-dot" cx="342.2" cy="327.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen4: 14.70</title></circle>
-  <circle class="nc-dot" cx="413.8" cy="324.0" r="4" fill="var(--nc-c2)"><title>testrun2 gen5: 15.84</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="327.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen6: 14.70</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="325.0" r="4" fill="var(--nc-c2)"><title>testrun2 gen7: 15.51</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="327.6" r="4" fill="var(--nc-c2)"><title>testrun2 gen8: 14.70</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="327.5" r="4" fill="var(--nc-c2)"><title>testrun2 gen9: 14.72</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="64.6" r="4" fill="var(--nc-c2)"><title>Run 2 gen0: 3616.34</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="310.8" r="4" fill="var(--nc-c2)"><title>Run 2 gen1: 20.89</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="324.0" r="4" fill="var(--nc-c2)"><title>Run 2 gen2: 15.84</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="231.1" r="4" fill="var(--nc-c2)"><title>Run 2 gen3: 110.70</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="327.6" r="4" fill="var(--nc-c2)"><title>Run 2 gen4: 14.70</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="324.0" r="4" fill="var(--nc-c2)"><title>Run 2 gen5: 15.84</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="327.6" r="4" fill="var(--nc-c2)"><title>Run 2 gen6: 14.70</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="325.0" r="4" fill="var(--nc-c2)"><title>Run 2 gen7: 15.51</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="327.6" r="4" fill="var(--nc-c2)"><title>Run 2 gen8: 14.70</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="327.5" r="4" fill="var(--nc-c2)"><title>Run 2 gen9: 14.72</title></circle>
 
-  <!-- testrun3 -->
+  <!-- Run 3 -->
   <polyline class="nc-series" stroke="var(--nc-c3)" points="56.0,156.7 127.6,66.7 199.1,224.6 270.7,238.1 342.2,238.5 413.8,238.8 485.3,238.6 556.9,238.0 628.4,238.2 700.0,238.1"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="156.7" r="4" fill="var(--nc-c3)"><title>testrun3 gen0: 525.38</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="66.7" r="4" fill="var(--nc-c3)"><title>testrun3 gen1: 3458.74</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="224.6" r="4" fill="var(--nc-c3)"><title>testrun3 gen2: 127.01</title></circle>
-  <circle class="nc-dot" cx="270.7" cy="238.1" r="4" fill="var(--nc-c3)"><title>testrun3 gen3: 95.70</title></circle>
-  <circle class="nc-dot" cx="342.2" cy="238.5" r="4" fill="var(--nc-c3)"><title>testrun3 gen4: 94.90</title></circle>
-  <circle class="nc-dot" cx="413.8" cy="238.8" r="4" fill="var(--nc-c3)"><title>testrun3 gen5: 94.38</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="238.6" r="4" fill="var(--nc-c3)"><title>testrun3 gen6: 94.62</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="238.0" r="4" fill="var(--nc-c3)"><title>testrun3 gen7: 95.94</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="238.2" r="4" fill="var(--nc-c3)"><title>testrun3 gen8: 95.56</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="238.1" r="4" fill="var(--nc-c3)"><title>testrun3 gen9: 95.68</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="156.7" r="4" fill="var(--nc-c3)"><title>Run 3 gen0: 525.38</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="66.7" r="4" fill="var(--nc-c3)"><title>Run 3 gen1: 3458.74</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="224.6" r="4" fill="var(--nc-c3)"><title>Run 3 gen2: 127.01</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="238.1" r="4" fill="var(--nc-c3)"><title>Run 3 gen3: 95.70</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="238.5" r="4" fill="var(--nc-c3)"><title>Run 3 gen4: 94.90</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="238.8" r="4" fill="var(--nc-c3)"><title>Run 3 gen5: 94.38</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="238.6" r="4" fill="var(--nc-c3)"><title>Run 3 gen6: 94.62</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="238.0" r="4" fill="var(--nc-c3)"><title>Run 3 gen7: 95.94</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="238.2" r="4" fill="var(--nc-c3)"><title>Run 3 gen8: 95.56</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="238.1" r="4" fill="var(--nc-c3)"><title>Run 3 gen9: 95.68</title></circle>
 
-  <!-- testrun4 -->
+  <!-- Run 4 -->
   <polyline class="nc-series" stroke="var(--nc-c4)" points="56.0,42.8 127.6,171.9 199.1,236.1 270.7,178.7 342.2,233.8 413.8,238.2 485.3,231.4 556.9,238.2 628.4,237.3 700.0,261.4"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="42.8" r="4" fill="var(--nc-c4)"><title>testrun4 gen0: 5712.23</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="171.9" r="4" fill="var(--nc-c4)"><title>testrun4 gen1: 382.42</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="236.1" r="4" fill="var(--nc-c4)"><title>testrun4 gen2: 99.74</title></circle>
-  <circle class="nc-dot" cx="270.7" cy="178.7" r="4" fill="var(--nc-c4)"><title>testrun4 gen3: 331.91</title></circle>
-  <circle class="nc-dot" cx="342.2" cy="233.8" r="4" fill="var(--nc-c4)"><title>testrun4 gen4: 104.68</title></circle>
-  <circle class="nc-dot" cx="413.8" cy="238.2" r="4" fill="var(--nc-c4)"><title>testrun4 gen5: 95.47</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="231.4" r="4" fill="var(--nc-c4)"><title>testrun4 gen6: 110.01</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="238.2" r="4" fill="var(--nc-c4)"><title>testrun4 gen7: 95.47</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="237.3" r="4" fill="var(--nc-c4)"><title>testrun4 gen8: 97.30</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="261.4" r="4" fill="var(--nc-c4)"><title>testrun4 gen9: 58.72</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="42.8" r="4" fill="var(--nc-c4)"><title>Run 4 gen0: 5712.23</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="171.9" r="4" fill="var(--nc-c4)"><title>Run 4 gen1: 382.42</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="236.1" r="4" fill="var(--nc-c4)"><title>Run 4 gen2: 99.74</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="178.7" r="4" fill="var(--nc-c4)"><title>Run 4 gen3: 331.91</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="233.8" r="4" fill="var(--nc-c4)"><title>Run 4 gen4: 104.68</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="238.2" r="4" fill="var(--nc-c4)"><title>Run 4 gen5: 95.47</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="231.4" r="4" fill="var(--nc-c4)"><title>Run 4 gen6: 110.01</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="238.2" r="4" fill="var(--nc-c4)"><title>Run 4 gen7: 95.47</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="237.3" r="4" fill="var(--nc-c4)"><title>Run 4 gen8: 97.30</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="261.4" r="4" fill="var(--nc-c4)"><title>Run 4 gen9: 58.72</title></circle>
 
-  <!-- testrun5 -->
+  <!-- Run 5 -->
   <polyline class="nc-series" stroke="var(--nc-c5)" points="56.0,19.5 127.6,197.7 199.1,197.0 270.7,238.0 342.2,238.2 413.8,238.2 485.3,238.1 556.9,238.2 628.4,238.2 700.0,240.9"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="19.5" r="4" fill="var(--nc-c5)"><title>testrun5 gen0: 9291.07</title></circle>
-  <circle class="nc-dot" cx="127.6" cy="197.7" r="4" fill="var(--nc-c5)"><title>testrun5 gen1: 222.96</title></circle>
-  <circle class="nc-dot" cx="199.1" cy="197.0" r="4" fill="var(--nc-c5)"><title>testrun5 gen2: 226.20</title></circle>
-  <circle class="nc-dot" cx="270.7" cy="238.0" r="4" fill="var(--nc-c5)"><title>testrun5 gen3: 95.90</title></circle>
-  <circle class="nc-dot" cx="342.2" cy="238.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen4: 95.47</title></circle>
-  <circle class="nc-dot" cx="413.8" cy="238.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen5: 95.52</title></circle>
-  <circle class="nc-dot" cx="485.3" cy="238.1" r="4" fill="var(--nc-c5)"><title>testrun5 gen6: 95.79</title></circle>
-  <circle class="nc-dot" cx="556.9" cy="238.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen7: 95.47</title></circle>
-  <circle class="nc-dot" cx="628.4" cy="238.2" r="4" fill="var(--nc-c5)"><title>testrun5 gen8: 95.47</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="240.9" r="4" fill="var(--nc-c5)"><title>testrun5 gen9: 90.21</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="19.5" r="4" fill="var(--nc-c5)"><title>Run 5 gen0: 9291.07</title></circle>
+  <circle class="nc-dot" cx="127.6" cy="197.7" r="4" fill="var(--nc-c5)"><title>Run 5 gen1: 222.96</title></circle>
+  <circle class="nc-dot" cx="199.1" cy="197.0" r="4" fill="var(--nc-c5)"><title>Run 5 gen2: 226.20</title></circle>
+  <circle class="nc-dot" cx="270.7" cy="238.0" r="4" fill="var(--nc-c5)"><title>Run 5 gen3: 95.90</title></circle>
+  <circle class="nc-dot" cx="342.2" cy="238.2" r="4" fill="var(--nc-c5)"><title>Run 5 gen4: 95.47</title></circle>
+  <circle class="nc-dot" cx="413.8" cy="238.2" r="4" fill="var(--nc-c5)"><title>Run 5 gen5: 95.52</title></circle>
+  <circle class="nc-dot" cx="485.3" cy="238.1" r="4" fill="var(--nc-c5)"><title>Run 5 gen6: 95.79</title></circle>
+  <circle class="nc-dot" cx="556.9" cy="238.2" r="4" fill="var(--nc-c5)"><title>Run 5 gen7: 95.47</title></circle>
+  <circle class="nc-dot" cx="628.4" cy="238.2" r="4" fill="var(--nc-c5)"><title>Run 5 gen8: 95.47</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="240.9" r="4" fill="var(--nc-c5)"><title>Run 5 gen9: 90.21</title></circle>
 </svg>
 <div class="nc-legend">
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c1);"></span>testrun1</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c2);"></span>testrun2</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c3);"></span>testrun3</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>testrun4</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>testrun5</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c1);"></span>Run 1</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c2);"></span>Run 2</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c3);"></span>Run 3</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>Run 4</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>Run 5</div>
 </div>
-<p class="nc-caption">Y axis is log-scaled (NVE ranges from ~14.7 to ~9,291 across these runs). Hover a point for its exact value. All 10 generations succeeded in every one of these 5 runs — no missing points, unlike the earlier `workspace_6` batch run before the eval-loop retry fix.</p>
+<p class="nc-caption">Y axis is log-scaled (NVE ranges from ~14.7 to ~9,291 across these runs). Hover a point for its exact value. All 10 generations succeeded in every one of these 5 runs — no missing points, unlike an earlier batch of runs from before the eval-loop bug fix.</p>
 </div>
 </div>
 
 
-| Gen | testrun1 | testrun2 | testrun3 | testrun4 | testrun5 |
+| Gen | Run 1 | Run 2 | Run 3 | Run 4 | Run 5 |
 |---|---|---|---|---|---|
 | 0 | 3269.05 | 3616.34 | 525.38 | 5712.23 | 9291.07 |
 | 1 | 86.63 | 20.89 | 3458.74 | 382.42 | 222.96 |
@@ -225,14 +225,14 @@ Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-inject
 | 8 | 80.40 | 14.70 | 95.56 | 97.30 | 95.47 |
 | 9 | 76.75 | 14.72 | 95.68 | 58.72 | 90.21 |
 
-*Source: `leaderboard.json` in each `workspace7_testrun*` directory -- the framework's own recorded metric per generation, not re-derived from logs.*
+*Source: each run's own recorded leaderboard file -- the framework's own recorded metric per generation, not re-derived from logs.*
 
 
 ## NVE per iteration -- EvoX / SkyDiscover
 
 Iteration 0 **is** a fixed baseline -- the literal LS-only seed program, executed verbatim every run, always scoring NVE = 101.69. All five runs converge from the same starting point, which is what makes them directly comparable.
 
-| Iter | testrun1 | testrun2 | testrun3 | testrun4 | testrun5 |
+| Iter | Run 1 | Run 2 | Run 3 | Run 4 | Run 5 |
 |---|---|---|---|---|---|
 | 0 | 101.69 | 101.69 | 101.69 | 101.69 | 101.69 |
 | 1 | 58.46 | 222.85 | 69.44 | 45.36 | 129.98 |
@@ -294,82 +294,82 @@ Iteration 0 **is** a fixed baseline -- the literal LS-only seed program, execute
   <text class="nc-axis-text" x="635.6" y="365" text-anchor="middle">9</text>
   <text class="nc-axis-text" x="700.0" y="365" text-anchor="middle">10</text>
 
-  <!-- testrun1 -->
+  <!-- Run 1 -->
   <polyline class="nc-series" stroke="var(--nc-c1)" points="56.0,176.1 120.4,214.9 184.8,215.7 249.2,291.1 313.6,287.5 378.0,317.6 442.4,303.3 506.8,319.1 571.2,282.7 635.6,304.0 700.0,300.2"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c1)"><title>testrun1 iter0: 101.69</title></circle>
-  <circle class="nc-dot" cx="120.4" cy="214.9" r="4" fill="var(--nc-c1)"><title>testrun1 iter1: 58.46</title></circle>
-  <circle class="nc-dot" cx="184.8" cy="215.7" r="4" fill="var(--nc-c1)"><title>testrun1 iter2: 57.82</title></circle>
-  <circle class="nc-dot" cx="249.2" cy="291.1" r="4" fill="var(--nc-c1)"><title>testrun1 iter3: 19.70</title></circle>
-  <circle class="nc-dot" cx="313.6" cy="287.5" r="4" fill="var(--nc-c1)"><title>testrun1 iter4: 20.74</title></circle>
-  <circle class="nc-dot" cx="378.0" cy="317.6" r="4" fill="var(--nc-c1)"><title>testrun1 iter5: 13.49</title></circle>
-  <circle class="nc-dot" cx="442.4" cy="303.3" r="4" fill="var(--nc-c1)"><title>testrun1 iter6: 16.56</title></circle>
-  <circle class="nc-dot" cx="506.8" cy="319.1" r="4" fill="var(--nc-c1)"><title>testrun1 iter7: 13.22</title></circle>
-  <circle class="nc-dot" cx="571.2" cy="282.7" r="4" fill="var(--nc-c1)"><title>testrun1 iter8: 22.22</title></circle>
-  <circle class="nc-dot" cx="635.6" cy="304.0" r="4" fill="var(--nc-c1)"><title>testrun1 iter9: 16.39</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="300.2" r="4" fill="var(--nc-c1)"><title>testrun1 iter10: 17.30</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c1)"><title>Run 1 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="214.9" r="4" fill="var(--nc-c1)"><title>Run 1 iter1: 58.46</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="215.7" r="4" fill="var(--nc-c1)"><title>Run 1 iter2: 57.82</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="291.1" r="4" fill="var(--nc-c1)"><title>Run 1 iter3: 19.70</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="287.5" r="4" fill="var(--nc-c1)"><title>Run 1 iter4: 20.74</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="317.6" r="4" fill="var(--nc-c1)"><title>Run 1 iter5: 13.49</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="303.3" r="4" fill="var(--nc-c1)"><title>Run 1 iter6: 16.56</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="319.1" r="4" fill="var(--nc-c1)"><title>Run 1 iter7: 13.22</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="282.7" r="4" fill="var(--nc-c1)"><title>Run 1 iter8: 22.22</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="304.0" r="4" fill="var(--nc-c1)"><title>Run 1 iter9: 16.39</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="300.2" r="4" fill="var(--nc-c1)"><title>Run 1 iter10: 17.30</title></circle>
 
-  <!-- testrun2 -->
+  <!-- Run 2 -->
   <polyline class="nc-series" stroke="var(--nc-c2)" points="56.0,176.1 120.4,121.2 184.8,174.1 249.2,264.5 313.6,268.9 378.0,263.5 442.4,266.6 506.8,294.6 571.2,324.8 635.6,326.7 700.0,314.3"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c2)"><title>testrun2 iter0: 101.69</title></circle>
-  <circle class="nc-dot" cx="120.4" cy="121.2" r="4" fill="var(--nc-c2)"><title>testrun2 iter1: 222.85</title></circle>
-  <circle class="nc-dot" cx="184.8" cy="174.1" r="4" fill="var(--nc-c2)"><title>testrun2 iter2: 104.62</title></circle>
-  <circle class="nc-dot" cx="249.2" cy="264.5" r="4" fill="var(--nc-c2)"><title>testrun2 iter3: 28.79</title></circle>
-  <circle class="nc-dot" cx="313.6" cy="268.9" r="4" fill="var(--nc-c2)"><title>testrun2 iter4: 27.04</title></circle>
-  <circle class="nc-dot" cx="378.0" cy="263.5" r="4" fill="var(--nc-c2)"><title>testrun2 iter5: 29.22</title></circle>
-  <circle class="nc-dot" cx="442.4" cy="266.6" r="4" fill="var(--nc-c2)"><title>testrun2 iter6: 27.95</title></circle>
-  <circle class="nc-dot" cx="506.8" cy="294.6" r="4" fill="var(--nc-c2)"><title>testrun2 iter7: 18.74</title></circle>
-  <circle class="nc-dot" cx="571.2" cy="324.8" r="4" fill="var(--nc-c2)"><title>testrun2 iter8: 12.18</title></circle>
-  <circle class="nc-dot" cx="635.6" cy="326.7" r="4" fill="var(--nc-c2)"><title>testrun2 iter9: 11.86</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="314.3" r="4" fill="var(--nc-c2)"><title>testrun2 iter10: 14.14</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c2)"><title>Run 2 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="121.2" r="4" fill="var(--nc-c2)"><title>Run 2 iter1: 222.85</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="174.1" r="4" fill="var(--nc-c2)"><title>Run 2 iter2: 104.62</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="264.5" r="4" fill="var(--nc-c2)"><title>Run 2 iter3: 28.79</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="268.9" r="4" fill="var(--nc-c2)"><title>Run 2 iter4: 27.04</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="263.5" r="4" fill="var(--nc-c2)"><title>Run 2 iter5: 29.22</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="266.6" r="4" fill="var(--nc-c2)"><title>Run 2 iter6: 27.95</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="294.6" r="4" fill="var(--nc-c2)"><title>Run 2 iter7: 18.74</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="324.8" r="4" fill="var(--nc-c2)"><title>Run 2 iter8: 12.18</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="326.7" r="4" fill="var(--nc-c2)"><title>Run 2 iter9: 11.86</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="314.3" r="4" fill="var(--nc-c2)"><title>Run 2 iter10: 14.14</title></circle>
 
-  <!-- testrun3 -->
+  <!-- Run 3 -->
   <polyline class="nc-series" stroke="var(--nc-c3)" points="56.0,176.1 120.4,202.9 184.8,192.1 249.2,217.5 313.6,151.1 378.0,215.2 442.4,217.7 506.8,284.4 571.2,290.3 635.6,285.1 700.0,286.7"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c3)"><title>testrun3 iter0: 101.69</title></circle>
-  <circle class="nc-dot" cx="120.4" cy="202.9" r="4" fill="var(--nc-c3)"><title>testrun3 iter1: 69.44</title></circle>
-  <circle class="nc-dot" cx="184.8" cy="192.1" r="4" fill="var(--nc-c3)"><title>testrun3 iter2: 80.99</title></circle>
-  <circle class="nc-dot" cx="249.2" cy="217.5" r="4" fill="var(--nc-c3)"><title>testrun3 iter3: 56.32</title></circle>
-  <circle class="nc-dot" cx="313.6" cy="151.1" r="4" fill="var(--nc-c3)"><title>testrun3 iter4: 145.32</title></circle>
-  <circle class="nc-dot" cx="378.0" cy="215.2" r="4" fill="var(--nc-c3)"><title>testrun3 iter5: 58.20</title></circle>
-  <circle class="nc-dot" cx="442.4" cy="217.7" r="4" fill="var(--nc-c3)"><title>testrun3 iter6: 56.20</title></circle>
-  <circle class="nc-dot" cx="506.8" cy="284.4" r="4" fill="var(--nc-c3)"><title>testrun3 iter7: 21.68</title></circle>
-  <circle class="nc-dot" cx="571.2" cy="290.3" r="4" fill="var(--nc-c3)"><title>testrun3 iter8: 19.94</title></circle>
-  <circle class="nc-dot" cx="635.6" cy="285.1" r="4" fill="var(--nc-c3)"><title>testrun3 iter9: 21.47</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="286.7" r="4" fill="var(--nc-c3)"><title>testrun3 iter10: 20.98</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c3)"><title>Run 3 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="202.9" r="4" fill="var(--nc-c3)"><title>Run 3 iter1: 69.44</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="192.1" r="4" fill="var(--nc-c3)"><title>Run 3 iter2: 80.99</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="217.5" r="4" fill="var(--nc-c3)"><title>Run 3 iter3: 56.32</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="151.1" r="4" fill="var(--nc-c3)"><title>Run 3 iter4: 145.32</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="215.2" r="4" fill="var(--nc-c3)"><title>Run 3 iter5: 58.20</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="217.7" r="4" fill="var(--nc-c3)"><title>Run 3 iter6: 56.20</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="284.4" r="4" fill="var(--nc-c3)"><title>Run 3 iter7: 21.68</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="290.3" r="4" fill="var(--nc-c3)"><title>Run 3 iter8: 19.94</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="285.1" r="4" fill="var(--nc-c3)"><title>Run 3 iter9: 21.47</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="286.7" r="4" fill="var(--nc-c3)"><title>Run 3 iter10: 20.98</title></circle>
 
-  <!-- testrun4 -->
+  <!-- Run 4 -->
   <polyline class="nc-series" stroke="var(--nc-c4)" points="56.0,176.1 120.4,232.7 184.8,301.2 249.2,279.6 313.6,300.2 378.0,338.7 442.4,335.1 506.8,336.3 571.2,331.2 635.6,336.3 700.0,334.7"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c4)"><title>testrun4 iter0: 101.69</title></circle>
-  <circle class="nc-dot" cx="120.4" cy="232.7" r="4" fill="var(--nc-c4)"><title>testrun4 iter1: 45.36</title></circle>
-  <circle class="nc-dot" cx="184.8" cy="301.2" r="4" fill="var(--nc-c4)"><title>testrun4 iter2: 17.07</title></circle>
-  <circle class="nc-dot" cx="249.2" cy="279.6" r="4" fill="var(--nc-c4)"><title>testrun4 iter3: 23.22</title></circle>
-  <circle class="nc-dot" cx="313.6" cy="300.2" r="4" fill="var(--nc-c4)"><title>testrun4 iter4: 17.31</title></circle>
-  <circle class="nc-dot" cx="378.0" cy="338.7" r="4" fill="var(--nc-c4)"><title>testrun4 iter5: 9.99</title></circle>
-  <circle class="nc-dot" cx="442.4" cy="335.1" r="4" fill="var(--nc-c4)"><title>testrun4 iter6: 10.51</title></circle>
-  <circle class="nc-dot" cx="506.8" cy="336.3" r="4" fill="var(--nc-c4)"><title>testrun4 iter7: 10.33</title></circle>
-  <circle class="nc-dot" cx="571.2" cy="331.2" r="4" fill="var(--nc-c4)"><title>testrun4 iter8: 11.11</title></circle>
-  <circle class="nc-dot" cx="635.6" cy="336.3" r="4" fill="var(--nc-c4)"><title>testrun4 iter9: 10.33</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="334.7" r="4" fill="var(--nc-c4)"><title>testrun4 iter10: 10.58</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c4)"><title>Run 4 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="232.7" r="4" fill="var(--nc-c4)"><title>Run 4 iter1: 45.36</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="301.2" r="4" fill="var(--nc-c4)"><title>Run 4 iter2: 17.07</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="279.6" r="4" fill="var(--nc-c4)"><title>Run 4 iter3: 23.22</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="300.2" r="4" fill="var(--nc-c4)"><title>Run 4 iter4: 17.31</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="338.7" r="4" fill="var(--nc-c4)"><title>Run 4 iter5: 9.99</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="335.1" r="4" fill="var(--nc-c4)"><title>Run 4 iter6: 10.51</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="336.3" r="4" fill="var(--nc-c4)"><title>Run 4 iter7: 10.33</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="331.2" r="4" fill="var(--nc-c4)"><title>Run 4 iter8: 11.11</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="336.3" r="4" fill="var(--nc-c4)"><title>Run 4 iter9: 10.33</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="334.7" r="4" fill="var(--nc-c4)"><title>Run 4 iter10: 10.58</title></circle>
 
-  <!-- testrun5 -->
+  <!-- Run 5 -->
   <polyline class="nc-series" stroke="var(--nc-c5)" points="56.0,176.1 120.4,158.9 184.8,179.9 249.2,177.7 313.6,192.0 378.0,188.2 442.4,189.5 506.8,196.1 571.2,213.7 635.6,215.1 700.0,215.1"></polyline>
-  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c5)"><title>testrun5 iter0: 101.69</title></circle>
-  <circle class="nc-dot" cx="120.4" cy="158.9" r="4" fill="var(--nc-c5)"><title>testrun5 iter1: 129.98</title></circle>
-  <circle class="nc-dot" cx="184.8" cy="179.9" r="4" fill="var(--nc-c5)"><title>testrun5 iter2: 96.32</title></circle>
-  <circle class="nc-dot" cx="249.2" cy="177.7" r="4" fill="var(--nc-c5)"><title>testrun5 iter3: 99.50</title></circle>
-  <circle class="nc-dot" cx="313.6" cy="192.0" r="4" fill="var(--nc-c5)"><title>testrun5 iter4: 81.04</title></circle>
-  <circle class="nc-dot" cx="378.0" cy="188.2" r="4" fill="var(--nc-c5)"><title>testrun5 iter5: 85.57</title></circle>
-  <circle class="nc-dot" cx="442.4" cy="189.5" r="4" fill="var(--nc-c5)"><title>testrun5 iter6: 84.06</title></circle>
-  <circle class="nc-dot" cx="506.8" cy="196.1" r="4" fill="var(--nc-c5)"><title>testrun5 iter7: 76.52</title></circle>
-  <circle class="nc-dot" cx="571.2" cy="213.7" r="4" fill="var(--nc-c5)"><title>testrun5 iter8: 59.51</title></circle>
-  <circle class="nc-dot" cx="635.6" cy="215.1" r="4" fill="var(--nc-c5)"><title>testrun5 iter9: 58.27</title></circle>
-  <circle class="nc-dot" cx="700.0" cy="215.1" r="4" fill="var(--nc-c5)"><title>testrun5 iter10: 58.32</title></circle>
+  <circle class="nc-dot" cx="56.0" cy="176.1" r="4" fill="var(--nc-c5)"><title>Run 5 iter0: 101.69</title></circle>
+  <circle class="nc-dot" cx="120.4" cy="158.9" r="4" fill="var(--nc-c5)"><title>Run 5 iter1: 129.98</title></circle>
+  <circle class="nc-dot" cx="184.8" cy="179.9" r="4" fill="var(--nc-c5)"><title>Run 5 iter2: 96.32</title></circle>
+  <circle class="nc-dot" cx="249.2" cy="177.7" r="4" fill="var(--nc-c5)"><title>Run 5 iter3: 99.50</title></circle>
+  <circle class="nc-dot" cx="313.6" cy="192.0" r="4" fill="var(--nc-c5)"><title>Run 5 iter4: 81.04</title></circle>
+  <circle class="nc-dot" cx="378.0" cy="188.2" r="4" fill="var(--nc-c5)"><title>Run 5 iter5: 85.57</title></circle>
+  <circle class="nc-dot" cx="442.4" cy="189.5" r="4" fill="var(--nc-c5)"><title>Run 5 iter6: 84.06</title></circle>
+  <circle class="nc-dot" cx="506.8" cy="196.1" r="4" fill="var(--nc-c5)"><title>Run 5 iter7: 76.52</title></circle>
+  <circle class="nc-dot" cx="571.2" cy="213.7" r="4" fill="var(--nc-c5)"><title>Run 5 iter8: 59.51</title></circle>
+  <circle class="nc-dot" cx="635.6" cy="215.1" r="4" fill="var(--nc-c5)"><title>Run 5 iter9: 58.27</title></circle>
+  <circle class="nc-dot" cx="700.0" cy="215.1" r="4" fill="var(--nc-c5)"><title>Run 5 iter10: 58.32</title></circle>
 </svg>
 <div class="nc-legend">
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c1);"></span>testrun1</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c2);"></span>testrun2</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c3);"></span>testrun3</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>testrun4</div>
-  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>testrun5</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c1);"></span>Run 1</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c2);"></span>Run 2</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c3);"></span>Run 3</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>Run 4</div>
+  <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>Run 5</div>
 </div>
 <p class="nc-caption">Y axis is log-scaled. All 5 runs start from the identical fixed LS baseline (iteration 0, NVE 101.69) — the only point where every line coincides.</p>
 </div>

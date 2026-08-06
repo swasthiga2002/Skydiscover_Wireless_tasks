@@ -33,15 +33,15 @@ permalink: /qualitative/
 
 | | EvoX / SkyDiscover | AI Telco Engineer |
 |---|---|---|
-| Run | `evox_testrun4`, iteration 5 | `workspace7_testrun2`, gen04-0004 (tied with gen06, gen08) |
+| Run | Run 4, iteration 5 | Run 2 |
 | NVE | **9.985** | 14.7047 |
 | Approach | LS seed → delay-domain Wiener PDP shrinkage → RX-antenna spatial covariance eigenshrinkage → 5-tap time smoothing → residual-based error-variance calibration | LS seed → pilot-only empirical-Bayes GP/Wiener estimator with a bank of candidate delay-Doppler correlation kernels (multiple frequency/Doppler profiles), soft-selected per link/receive-chain by a GP-marginal-likelihood-style score, blended with the LS estimate → one decision-directed refinement pass using high-confidence data REs as weighted virtual pilots → error-variance calibration |
 | Code size | ~55 lines | ~407 lines |
 
-The gap between the two frameworks' best runs narrows substantially once AI Telco Engineer's data is corrected to the `workspace_7` batch (see the [Quantitative](/quantitative/) page): 9.985 vs. 14.70, not the much wider margin implied by the earlier `workspace_6` batch. EvoX's winning solution is still the simpler, more direct pipeline -- no runtime branching or candidate selection -- while AI Telco Engineer's winner explicitly builds and scores several candidate covariance kernels per call before committing to one.
+The gap between the two frameworks' best runs narrows substantially once AI Telco Engineer's results are corrected to use current, post-fix data (see the [Quantitative](/quantitative/) page): 9.985 vs. 14.70, not the much wider margin implied by an earlier draft of this comparison that used stale, pre-fix data. EvoX's winning solution is still the simpler, more direct pipeline -- no runtime branching or candidate selection -- while AI Telco Engineer's winner explicitly builds and scores several candidate covariance kernels per call before committing to one.
 
 <details>
-<summary><strong>SkyDiscover best (evox_testrun4, iteration 5) -- click to expand</strong></summary>
+<summary><strong>SkyDiscover best (Run 4, iteration 5) -- click to expand</strong></summary>
 
 ```python
 from sionna.phy.ofdm import LSChannelEstimator, LMMSEEqualizer
@@ -111,16 +111,12 @@ def mimo_detector(y, no):
     return llr
 ```
 
-Full file: `EvoX_testruns_ChannelEstimation/evox_testrun4/best/best_program.py`
-
 </details>
 
 <details>
-<summary><strong>AI Telco Engineer best (workspace7_testrun2, gen04-0004) -- click to expand</strong></summary>
+<summary><strong>AI Telco Engineer best (Run 2) -- click to expand</strong></summary>
 
 ~407 lines -- precomputes pilot masks/indices and a bank of candidate delay-Doppler correlation kernels (`_K_BANK`: several exponential/uniform/truncated-exponential delay profiles × several Doppler profiles derived from `CARRIER_FREQUENCY`), per receive-chain/stream solves a batched Cholesky system against each candidate kernel (`_eb_gp_estimate`), scores candidates with a blended leave-one-out/marginal negative-log-likelihood, soft-mixes the top-3 candidates with the raw LS estimate by a softmax over that score, then runs one decision-directed refinement pass (`_dd_refine`): equalizes and demaps with the initial estimate, converts LLRs to soft QAM means/variances, treats a capped, confidence-gated subset of data REs as additional weighted virtual pilots, and refits the same kernel-based estimate before final equalization/demapping.
-
-Full file: `the-ai-telco-engineer/tasks/channel_estimation/workspace_7/workspace7_testrun2/gen04-0004/draft.py`
 
 </details>
 
@@ -152,6 +148,6 @@ EvoX has no per-run hypothesis assignment -- every run starts from the identical
 
 ## Methodology Notes
 
-- **AI Telco Engineer data source: `workspace_7`, not `workspace_6`.** See the [Quantitative](/quantitative/) page for why -- in short, `workspace_7` is the correct/current batch (run after the eval-loop retry fix), and an earlier draft of this comparison mistakenly used an older `workspace_6` batch.
-- **Zero hard failures in `workspace_7`.** Every one of the 5 runs' 10 generations returned a real score. This is a qualitative difference from the pre-fix behavior, not just a quantitative one -- see [Evaluation](/evaluation/) for the retry-loop mechanism responsible.
+- **AI Telco Engineer data source: current, post-fix runs.** See the [Quantitative](/quantitative/) page for why -- in short, an earlier draft of this comparison mistakenly used data from before a bug fix; the numbers here reflect the corrected runs.
+- **Zero hard failures in the current runs.** Every one of the 5 runs' 10 generations returned a real score. This is a qualitative difference from the pre-fix behavior, not just a quantitative one -- see [Evaluation](/evaluation/) for the retry-loop mechanism responsible.
 - **All 5 AI Telco hypotheses converge on the same algorithmic family** (delay-Doppler transform-domain denoising + decision-directed refinement), assigned independently by the manager LLM without seeing each other. EvoX has no equivalent diversity mechanism at the hypothesis level -- its exploration happens entirely through the search-strategy meta-evolution described on the [Architecture](/architecture/) page.

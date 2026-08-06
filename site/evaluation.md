@@ -133,7 +133,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 
 ### AI Telco Engineer — per generation
 
-**Run 1 (`workspace7_testrun1`)**
+**Run 1**
 
 | Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
 |---|---|---|---|---|
@@ -148,7 +148,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 8 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
 | 9 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
 
-**Run 2 (`workspace7_testrun2`)**
+**Run 2**
 
 | Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
 |---|---|---|---|---|
@@ -163,7 +163,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 8 | 2 | 6 | 0 | Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
 | 9 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
 
-**Run 3 (`workspace7_testrun3`)**
+**Run 3**
 
 | Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
 |---|---|---|---|---|
@@ -178,7 +178,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 8 | 1 | 7 | 2 | List workspace files ×1, Sionna doc retrieval ×2, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
 | 9 | 1 | 7 | 3 | List workspace files ×1, Sionna doc retrieval ×2, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
 
-**Run 4 (`workspace7_testrun4`)**
+**Run 4**
 
 | Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
 |---|---|---|---|---|
@@ -193,7 +193,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 8 | 1 | 5 | 1 | Sionna doc retrieval ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
 | 9 | 1 | 28 | 7 | List workspace files ×3, Sionna doc retrieval ×5, Read a file ×3, Run exploratory Python ×15, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
 
-**Run 5 (`workspace7_testrun5`)**
+**Run 5**
 
 | Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
 |---|---|---|---|---|
@@ -212,7 +212,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 
 *All 5 runs shown. Each run also makes 1 one-time LLM call before iteration 1 (write explore/refine guidance), not counted in the rows below.*
 
-**Run 1 (`evox_testrun1`)**
+**Run 1**
 
 | Iter | Eval calls | LLM calls | Purpose |
 |---|---|---|---|
@@ -227,7 +227,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
 | 10 | 1 | 1 | Generate & evaluate candidate solution |
 
-**Run 2 (`evox_testrun2`)**
+**Run 2**
 
 | Iter | Eval calls | LLM calls | Purpose |
 |---|---|---|---|
@@ -242,7 +242,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
 | 10 | 1 | 1 | Generate & evaluate candidate solution |
 
-**Run 3 (`evox_testrun3`)**
+**Run 3**
 
 | Iter | Eval calls | LLM calls | Purpose |
 |---|---|---|---|
@@ -257,7 +257,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
 | 10 | 1 | 1 | Generate & evaluate candidate solution |
 
-**Run 4 (`evox_testrun4`)**
+**Run 4**
 
 | Iter | Eval calls | LLM calls | Purpose |
 |---|---|---|---|
@@ -272,7 +272,7 @@ Every number below comes directly from parsing run journals/logs (`journal.log` 
 | 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
 | 10 | 1 | 1 | Generate & evaluate candidate solution |
 
-**Run 5 (`evox_testrun5`)**
+**Run 5**
 
 | Iter | Eval calls | LLM calls | Purpose |
 |---|---|---|---|

@@ -30,14 +30,6 @@ permalink: /qualitative/
 
 **The actual algorithms.** For NVE numbers and run statistics only, see [Quantitative](/quantitative/).
 
-## The Task
-
-Both frameworks were given the same problem: given the noisy received signal from a multi-antenna uplink transmission over a realistic outdoor wireless channel, estimate that channel well enough to recover the transmitted bits.
-
-The transmitter sends a mix of known reference symbols (pilots) and unknown data symbols across many subcarriers and time slots, all distorted by the channel and corrupted by additive receiver noise. A solution receives two things: the received signal, covering every antenna, subcarrier, and time slot, and the noise level at the receiver. From that, it must produce a channel estimate, plus a confidence/error-variance measure, using only the pilot symbols to infer what happened to the unseen data symbols.
-
-That channel estimate then feeds a fixed downstream pipeline that turns it into soft bit decisions, which a standard error-correcting code decodes into a final result. A solution is scored by how close its resulting bit-error rate gets to the bit-error rate achievable with perfect knowledge of the channel, averaged across several low-SNR (noisy) operating points.
-
 ## Best Algorithm -- Side by Side
 
 | | EvoX / SkyDiscover | AI Telco Engineer |
@@ -141,33 +133,22 @@ def mimo_detector(y, no):
 
 </div>
 <div class="cc-panel">
-<p class="cc-title">AI Telco Engineer best (Run 2)</p>
-<p class="cc-desc">~407 lines -- precomputes pilot masks/indices and a bank of candidate delay-Doppler correlation kernels (<code>_K_BANK</code>: several exponential/uniform/truncated-exponential delay profiles &times; several Doppler profiles derived from <code>CARRIER_FREQUENCY</code>), per receive-chain/stream solves a batched Cholesky system against each candidate kernel (<code>_eb_gp_estimate</code>), scores candidates with a blended leave-one-out/marginal negative-log-likelihood, soft-mixes the top-3 candidates with the raw LS estimate by a softmax over that score, then runs one decision-directed refinement pass (<code>_dd_refine</code>): equalizes and demaps with the initial estimate, converts LLRs to soft QAM means/variances, treats a capped, confidence-gated subset of data REs as additional weighted virtual pilots, and refits the same kernel-based estimate before final equalization/demapping.</p>
+<p class="cc-title">AI Telco Engineer best (Run 2, ~407 lines)</p>
+<p class="cc-desc">This solution precomputes pilot masks and indices, along with a bank of candidate delay-Doppler correlation kernels spanning several delay profiles (exponential, uniform, and truncated-exponential) and several Doppler profiles derived from the carrier frequency. For each receive chain, it fits every candidate kernel against the pilot observations with a batched Cholesky solve, scores each fit with a blended leave-one-out and marginal negative-log-likelihood criterion, and soft-mixes the top three candidates with the raw least-squares estimate using a softmax over their scores. It then runs one decision-directed refinement pass: equalize and demap with that initial estimate, convert the resulting soft bit values into QAM means and variances, treat a confidence-gated subset of data symbols as extra pilots, and refit the same kernel-based estimate before a final equalization and demapping pass.</p>
+<pre><code>precompute pilot_mask, pilot_indices
+K_BANK = build_kernel_bank(delay_profiles, doppler_profiles(carrier_frequency))
+
+for each receive_chain:
+    for kernel in K_BANK:
+        estimate[kernel] = cholesky_solve(kernel, pilots)
+        score[kernel]    = blended_loo_nll(estimate[kernel], pilots)
+    weights = softmax(top_3(score))
+    h_hat   = mix(weights, estimate[top_3], ls_estimate)
+
+x_hat, llr  = equalize_and_demap(h_hat)
+soft_pilots = confidence_gate(qam_soft_values(llr))
+h_hat       = refit(K_BANK, pilots + soft_pilots)
+
+return equalize_and_demap(h_hat)</code></pre>
 </div>
 </div>
-
-## Initial Hypothesis vs. Best NVE -- AI Telco Engineer
-
-Each run is assigned a distinct starting approach by the manager LLM before generation 0 begins.
-
-| Run | Initial hypothesis | Best NVE |
-|---|---|---|
-| 1 | Adaptive delay-Doppler sparse denoising -- LS pilot estimate, IFFT to delay taps with noise-floor Wiener shrinkage, FFT to Doppler domain with a second adaptive shrinkage pass, inverse transform back. | 76.75 |
-| 2 | Two-stage sparse delay-Doppler Bayesian estimator -- fit a compact 2D Fourier (delay+Doppler) basis to pilot LS via ridge regression, then one decision-directed refinement using high-confidence data REs as virtual pilots. | **14.70** |
-| 3 | Fixed-iteration Bayesian decision-directed delay-domain estimator -- LS + delay-domain shrinkage/Doppler smoothing, then 1-2 unrolled decision-directed refinement passes treating confident data REs as extra pilots. | 94.38 |
-| 4 | Transform-domain sparse Bayesian/Wiener estimator -- LS pilots, delay-domain tap selection/shrinkage, Doppler ridge-regression basis fit, one EM-style decision-directed refinement. | 58.72 |
-| 5 | Parametric 2D delay-Doppler shrinkage estimator -- LS pilots, delay-domain tap selection via energy threshold, per-tap Doppler polynomial/DCT fit via ridge regression, transform back to frequency. | 90.21 |
-
-Notably, the run whose best NVE (14.70) beat every other run by a wide margin (next-best is 58.72) started from a hypothesis that isn't obviously more sophisticated than the others -- all 5 hypotheses independently converge on the same family (delay-Doppler transform-domain denoising off an LS pilot estimate, plus some form of decision-directed refinement). What the 407-line winning implementation actually does differently is explored empirically at generation time (the candidate-kernel bank + per-link soft-selection), not prescribed by the initial hypothesis text.
-
-## Initial Hypothesis vs. Best NVE -- EvoX / SkyDiscover
-
-EvoX has no per-run hypothesis assignment -- every run starts from the identical fixed LS baseline (`initial_program_path`), and the LLM is free to propose its own first direction at iteration 1 without a prescribed approach.
-
-| Run | Initial hypothesis | Best NVE |
-|---|---|---|
-| 1 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 13.22 |
-| 2 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 11.86 |
-| 3 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 19.94 |
-| 4 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 9.98* |
-| 5 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 58.27 |

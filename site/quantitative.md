@@ -30,15 +30,23 @@ permalink: /quantitative/
 
 **Numbers only.** For the actual algorithms -- what each framework's best run came up with, and each run's starting hypothesis -- see [Qualitative](/qualitative/).
 
+## The Task
+
+Both frameworks were given the same problem: given the noisy received signal from a multi-antenna uplink transmission over a realistic outdoor wireless channel, estimate that channel well enough to recover the transmitted bits.
+
+The transmitter sends a mix of known reference symbols (pilots) and unknown data symbols across many subcarriers and time slots, all distorted by the channel and corrupted by additive receiver noise. A solution receives two things: the received signal, covering every antenna, subcarrier, and time slot, and the noise level at the receiver. From that, it must produce a channel estimate, plus a confidence/error-variance measure, using only the pilot symbols to infer what happened to the unseen data symbols.
+
+That channel estimate then feeds a fixed downstream pipeline that turns it into soft bit decisions, which a standard error-correcting code decodes into a final result. A solution is scored by how close its resulting bit-error rate gets to the bit-error rate achievable with perfect knowledge of the channel, averaged across several low-SNR (noisy) operating points.
+
 ## Channel-Estimation Benchmark
 
-Both frameworks target the same task: implement `mimo_detector(y, no)` for a 4×16 MIMO OFDM uplink (3GPP UMi channel, 5G NR LDPC, QPSK), minimizing the **Normalized Validation Error**:
+Both frameworks target the same task: implement `mimo_detector(y, no)` for a 4×16 MIMO OFDM uplink (3GPP UMi channel, 5G NR LDPC, QPSK), minimizing the **Normalized Validation Error**, defined as:
 
 ```
-NVE = mean over SNR points of  BLER_candidate / BLER_perfect-CSI
+NVE = (1 / |S|) · Σ_{s ∈ S}  BLER_candidate(s) / BLER_perfect-CSI(s)
 ```
 
-Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equalizer and APP demapper are fixed scaffold in both frameworks. Physical-layer parameters (antenna counts, FFT size, subcarrier spacing, carrier frequency, batch size, Monte-Carlo iterations) are identical between the two setups. One methodology difference remains: SkyDiscover averages NVE over 7 SNR points (-9 to -2 dB, 1 dB step); AI Telco Engineer averages over 4 (-9 to -2 dB, 2 dB step).
+where **S** is the set of SNR test points the benchmark evaluates at, **BLER_candidate(s)** is the block error rate produced by the candidate channel estimator at SNR point *s*, and **BLER_perfect-CSI(s)** is the block error rate produced by the same fixed equalizer and demapper given perfect knowledge of the channel at that same SNR point. NVE = 1 means the candidate matches perfect-CSI performance exactly; lower is better, and values below 1 are possible since BLER is itself a noisy Monte Carlo estimate. Only the channel-estimation stage is mutable -- the LMMSE equalizer and APP demapper are fixed scaffold in both frameworks. Physical-layer parameters (antenna counts, FFT size, subcarrier spacing, carrier frequency, batch size, Monte-Carlo iterations) are identical between the two setups. One methodology difference remains: SkyDiscover averages NVE over 7 SNR points (-9 to -2 dB, 1 dB step); AI Telco Engineer averages over 4 (-9 to -2 dB, 2 dB step).
 
 ## Run Summary
 

@@ -27,7 +27,7 @@ permalink: /evaluation/
 
 # Evaluation
 
-**How many times each framework calls its evaluation tool, and how many LLM calls it spends getting there.**
+Each candidate channel estimator is evaluated by plugging it into a fixed downstream receiver pipeline and running a Monte Carlo block-error-rate (BLER) simulation: at each SNR test point, many random draws of channel realizations, noise, and transmitted bits are simulated until enough block errors have been observed to give a statistically stable BLER estimate. The same simulation is also run with perfect channel state information (CSI) as a baseline, and the candidate's BLER is divided by the perfect-CSI BLER at each SNR point to get a per-point normalized error. That ratio, averaged across SNR points, is the NVE reported throughout this site; this page instead covers how many times each framework calls that evaluation tool, and how many LLM calls it spends getting there.
 
 ## Summary
 

@@ -52,6 +52,14 @@ where **S** is the set of SNR test points the benchmark evaluates at, **BLER_can
 
 ## Run Summary
 
+Both frameworks were run under matched settings so the comparison is head-to-head:
+
+| Setting | Matched between frameworks |
+|---|---|
+| Mode | Single job, single idea, single worker per generation/iteration |
+| Budget | 10 generations/iterations, 5 runs each (50 total per framework) |
+| Physical-layer config | Identical (antenna counts, FFT size, subcarrier spacing, carrier frequency, batch size, Monte-Carlo iterations) |
+
 | Framework | Runs compared | Model |
 |---|---|---|
 | **EvoX / SkyDiscover** | Run 1–5 | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) |

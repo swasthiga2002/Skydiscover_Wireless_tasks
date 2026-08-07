@@ -39,8 +39,6 @@ permalink: /qualitative/
 | Approach | LS seed → delay-domain Wiener PDP shrinkage → RX-antenna spatial covariance eigenshrinkage → 5-tap time smoothing → residual-based error-variance calibration | LS seed → pilot-only empirical-Bayes GP/Wiener estimator with a bank of candidate delay-Doppler correlation kernels (multiple frequency/Doppler profiles), soft-selected per link/receive-chain by a GP-marginal-likelihood-style score, blended with the LS estimate → one decision-directed refinement pass using high-confidence data REs as weighted virtual pilots → error-variance calibration |
 | Code size | ~55 lines | ~407 lines |
 
-The gap between the two frameworks' best runs narrows substantially once AI Telco Engineer's results are corrected to use current, post-fix data (see the [Quantitative](/quantitative/) page): 9.985* vs. 14.70, not the much wider margin implied by an earlier draft of this comparison that used stale, pre-fix data. EvoX's winning solution is still the simpler, more direct pipeline -- no runtime branching or candidate selection -- while AI Telco Engineer's winner explicitly builds and scores several candidate covariance kernels per call before committing to one.
-
 \* This value was reproduced using the 4-point SNR method, as used by AI Telco Engineer. Since NVE is a Monte Carlo estimate, this was measured across 10 reseeded evaluations; the average was 11.77.
 
 <div class="code-compare">

@@ -25,10 +25,6 @@ permalink: /
 <a href="{{ '/' | relative_url }}" class="current">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a>
 </div>
 
-# Channel Estimation Task
-
-*Dr. Krishna Narayanan and Swasthiga Rengasamy*
-
 ## Objective
 
 Recently, Aoudia et al. [\[1\]](#ref-1) introduced the AI Telco Engineer, an agentic framework that autonomously discovers solutions to an OFDM channel estimation problem. Inspired by that work, we explore whether more recent LLMs and a newer agentic search algorithm (EvoX [\[2\]](#ref-2), which evolves its own search strategy via LLMs as the run progresses, run here inside the SkyDiscover framework [\[3\]](#ref-3)) can produce better solutions to the OFDM channel estimation problem considered in [\[1\]](#ref-1), under matched settings on the same benchmark.
@@ -60,3 +56,9 @@ EvoX [\[2\]](#ref-2) is a self-evolving search algorithm, run here as one of the
 <span id="ref-2"></span>[2] S. Liu, S. Agarwal, M. Maheswaran, M. Cemri, Z. Li, Q. Mang, A. Naren, E. Boneh, A. Cheng, M. Z. Pan, et al., "EvoX: Meta-Evolution for Automated Discovery," *arXiv preprint* arXiv:2602.23413, 2026. [arXiv:2602.23413](https://arxiv.org/abs/2602.23413)
 
 <span id="ref-3"></span>[3] S. Liu, M. Cemri, S. Agarwal, A. Krentsel, A. Naren, Q. Mang, Z. Li, A. Gupta, M. Maheswaran, A. Cheng, et al., "SkyDiscover: A Flexible, Adaptive Framework for AI-Driven Scientific and Algorithmic Discovery," in *Proceedings of the ACM Conference on AI and Agentic Systems*, 2026, pp. 1223–1227.
+
+## Authors
+
+Dr. Krishna Narayanan and Swasthiga Rengasamy
+
+Texas A&M University

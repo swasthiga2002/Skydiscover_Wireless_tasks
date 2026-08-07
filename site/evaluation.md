@@ -22,12 +22,12 @@ permalink: /evaluation/
   .topnav a.current { color: var(--tn-accent); font-weight: 600; }
   .topnav .sep { color: var(--tn-line); }
 </style>
-<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="current">Evaluation</a><span class="sep">/</span><a href="{{ '/getting-started/' | relative_url }}" class="">Getting Started</a>
+<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="current">Evaluation</a>
 </div>
 
 # Evaluation
 
-**How many times each framework calls its evaluation tool, and how many LLM calls it spends getting there** — measured directly from real run logs, not from configuration alone. 5 runs x 10 iterations/generations, same channel-estimation benchmark as the [Quantitative](/quantitative/) page.
+**How many times each framework calls its evaluation tool, and how many LLM calls it spends getting there.**
 
 ## Summary
 
@@ -39,7 +39,7 @@ permalink: /evaluation/
 
 - **Evaluation grid density differs between frameworks.** SkyDiscover's NVE is averaged over 7 SNR points (-9 to -2 dB, 1 dB step); AI Telco Engineer averages over 4 (-9 to -2 dB, 2 dB step) -- see [Quantitative](/quantitative/) for how this affects the reported best-NVE comparison.
 
-## The Retry Loop, Simplified
+## Eval Retry Loop
 
 Both frameworks now enforce the identical retry contract -- up to 3 evaluation calls, stop immediately on success, corrective retry on failure using the exact error seen.
 
@@ -98,191 +98,73 @@ Both frameworks now enforce the identical retry contract -- up to 3 evaluation c
     <div class="ed-flow">
       <div class="ed-box"><span class="ed-tag">Logic</span>Sample parent + build prompt</div>
       <div class="ed-arrow">▼</div>
-      <div class="ed-box llm"><span class="ed-tag">LLM call</span>Generate a candidate solution — exactly 1 call, everything needed is already in the prompt</div>
+      <div class="ed-box llm"><span class="ed-tag">LLM call</span>Generate a candidate solution: exactly 1 call, everything needed is already in the prompt</div>
       <div class="ed-arrow">▼</div>
       <div class="ed-box"><span class="ed-tag">Logic</span>Evaluate the candidate</div>
       <div class="ed-arrow">▼</div>
       <div class="ed-box"><span class="ed-tag">Logic</span>Success?</div>
       <div class="ed-branch">Yes → add to database, iteration done<br>No → append the exact error, retry (up to 3 total)</div>
       <div class="ed-arrow">▼</div>
-      <div class="ed-box store"><span class="ed-tag">Storage</span>All 3 fail? Discard — no candidate added this iteration</div>
+      <div class="ed-box store"><span class="ed-tag">Storage</span>All 3 fail? Discard: no candidate added this iteration</div>
     </div>
   </div>
   <div>
     <p class="ed-col-title">AI Telco Engineer</p>
     <div class="ed-flow">
-      <div class="ed-box llm"><span class="ed-tag">LLM call(s)</span>Research + write draft.py — an open-ended agentic loop: docs lookup, file reads, exploratory code, as many LLM turns as it wants</div>
+      <div class="ed-box llm"><span class="ed-tag">LLM call(s)</span>Research + write draft.py, an open-ended agentic loop: docs lookup, file reads, exploratory code, as many LLM turns as it wants</div>
       <div class="ed-arrow">▼</div>
       <div class="ed-box"><span class="ed-tag">Logic</span>Evaluate draft.py</div>
       <div class="ed-arrow">▼</div>
       <div class="ed-box"><span class="ed-tag">Logic</span>Success?</div>
       <div class="ed-branch">Yes → copy draft.py → solution.py, stop<br>No → fix draft.py using the exact error, retry (up to 3 total)</div>
       <div class="ed-arrow">▼</div>
-      <div class="ed-box store"><span class="ed-tag">Storage</span>All 3 fail? Leave solution.py unset — post-run eval scores draft.py as-is</div>
+      <div class="ed-box store"><span class="ed-tag">Storage</span>All 3 fail? Leave solution.py unset: post-run eval scores draft.py as-is</div>
     </div>
   </div>
 </div>
 
-<div class="ed-note">Both loops now share the identical retry contract — up to 3 evaluation calls, stop immediately on success, corrective retry on failure using the exact error. The structural difference is what "generate a candidate" costs: EvoX spends exactly 1 LLM call per attempt (all context is pre-assembled into the prompt), while AI Telco Engineer's agent can spend anywhere from 4 to 28+ LLM turns per generation, since it's free to research documentation, read files, and run exploratory code before ever calling evaluate. See the tables below for the actual observed range across 50 runs of each.</div>
 </div>
 
 
 ## Full Data
 
-Every number below comes directly from parsing run journals/logs (`journal.log` for AI Telco Engineer, the `skydiscover.search.*` run log + `search/iteration_N/` artifacts for EvoX). "LLM calls" counts distinct model turns (grouped by timestamp for AI Telco Engineer's tool-call batches; each retry attempt for EvoX, since every attempt is exactly one model turn).
-
-### AI Telco Engineer — per generation
-
-**Run 1**
-
-| Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
-|---|---|---|---|---|
-| 0 | 3 | 11 | 4 | List workspace files ×1, Sionna doc retrieval ×2, Read a file ×1, Write draft.py ×1, Evaluate ×3, Edit draft.py (fix) ×2, Save solution.py ×1, Final summary ×1 |
-| 1 | 1 | 19 | 6 | List workspace files ×1, Sionna doc retrieval ×5, Run exploratory Python ×10, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 2 | 1 | 6 | 2 | Sionna doc retrieval ×2, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 3 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 4 | 1 | 14 | 1 | Sionna doc retrieval ×1, Run exploratory Python ×9, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 5 | 1 | 9 | 4 | List workspace files ×1, Sionna doc retrieval ×4, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 6 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 7 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 8 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 9 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-
-**Run 2**
-
-| Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
-|---|---|---|---|---|
-| 0 | 2 | 15 | 5 | List workspace files ×1, Sionna doc retrieval ×2, Run exploratory Python ×6, Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 1 | 1 | 12 | 5 | Sionna doc retrieval ×3, Run exploratory Python ×5, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 2 | 1 | 13 | 2 | List workspace files ×2, Sionna doc retrieval ×2, Read a file ×4, Run exploratory Python ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 3 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 4 | 2 | 8 | 4 | Sionna doc retrieval ×2, Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 5 | 2 | 6 | 0 | Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 6 | 2 | 8 | 0 | Write draft.py ×3, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 7 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 8 | 2 | 6 | 0 | Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 9 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-
-**Run 3**
-
-| Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
-|---|---|---|---|---|
-| 0 | 1 | 19 | 7 | List workspace files ×2, Sionna doc retrieval ×5, Read a file ×1, Run exploratory Python ×6, Write draft.py ×1, Evaluate ×1, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 1 | 1 | 20 | 6 | List workspace files ×2, Sionna doc retrieval ×6, Read a file ×1, Run exploratory Python ×7, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 2 | 1 | 5 | 1 | Sionna doc retrieval ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 3 | 1 | 6 | 4 | Sionna doc retrieval ×2, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 4 | 1 | 5 | 3 | Sionna doc retrieval ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 5 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 6 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 7 | 1 | 10 | 0 | List workspace files ×2, Read a file ×3, Run exploratory Python ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 8 | 1 | 7 | 2 | List workspace files ×1, Sionna doc retrieval ×2, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 9 | 1 | 7 | 3 | List workspace files ×1, Sionna doc retrieval ×2, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-
-**Run 4**
-
-| Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
-|---|---|---|---|---|
-| 0 | 2 | 21 | 6 | List workspace files ×1, Sionna doc retrieval ×6, Run exploratory Python ×9, Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 1 | 1 | 7 | 1 | List workspace files ×1, Sionna doc retrieval ×1, Read a file ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 2 | 1 | 7 | 3 | Sionna doc retrieval ×3, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 3 | 1 | 9 | 5 | List workspace files ×1, Sionna doc retrieval ×4, Run exploratory Python ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 4 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 5 | 1 | 7 | 3 | Sionna doc retrieval ×3, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 6 | 1 | 12 | 2 | List workspace files ×2, Sionna doc retrieval ×2, Read a file ×3, Run exploratory Python ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 7 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 8 | 1 | 5 | 1 | Sionna doc retrieval ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 9 | 1 | 28 | 7 | List workspace files ×3, Sionna doc retrieval ×5, Read a file ×3, Run exploratory Python ×15, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-
-**Run 5**
-
-| Gen | Eval calls | LLM calls | Sionna retrievals | Purpose breakdown |
-|---|---|---|---|---|
-| 0 | 2 | 23 | 4 | List workspace files ×1, Sionna doc retrieval ×4, Run exploratory Python ×7, Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×6, Save solution.py ×1, Final summary ×1 |
-| 1 | 1 | 6 | 2 | List workspace files ×1, Sionna doc retrieval ×2, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 2 | 2 | 14 | 6 | List workspace files ×1, Sionna doc retrieval ×6, Run exploratory Python ×1, Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 3 | 2 | 18 | 4 | List workspace files ×1, Sionna doc retrieval ×4, Run exploratory Python ×7, Write draft.py ×1, Evaluate ×2, Edit draft.py (fix) ×1, Save solution.py ×1, Final summary ×1 |
-| 4 | 1 | 5 | 1 | Sionna doc retrieval ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 5 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 6 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 7 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 8 | 1 | 6 | 3 | List workspace files ×1, Sionna doc retrieval ×1, Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-| 9 | 1 | 4 | 0 | Write draft.py ×1, Evaluate ×1, Save solution.py ×1, Final summary ×1 |
-
-### EvoX / SkyDiscover — per iteration
-
-*All 5 runs shown. Each run also makes 1 one-time LLM call before iteration 1 (write explore/refine guidance), not counted in the rows below.*
-
-**Run 1**
-
-| Iter | Eval calls | LLM calls | Purpose |
-|---|---|---|---|
-| 1 | 1 | 1 | Generate & evaluate candidate solution |
-| 2 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 3 | 1 | 1 | Generate & evaluate candidate solution |
-| 4 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 5 | 1 | 1 | Generate & evaluate candidate solution |
-| 6 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 7 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 8 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 10 | 1 | 1 | Generate & evaluate candidate solution |
-
-**Run 2**
-
-| Iter | Eval calls | LLM calls | Purpose |
-|---|---|---|---|
-| 1 | 1 | 1 | Generate & evaluate candidate solution |
-| 2 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 3 | 1 | 1 | Generate & evaluate candidate solution |
-| 4 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 5 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 6 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 7 | 1 | 1 | Generate & evaluate candidate solution |
-| 8 | 1 | 1 | Generate & evaluate candidate solution |
-| 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 10 | 1 | 1 | Generate & evaluate candidate solution |
-
-**Run 3**
-
-| Iter | Eval calls | LLM calls | Purpose |
-|---|---|---|---|
-| 1 | 1 | 1 | Generate & evaluate candidate solution |
-| 2 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 3 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 4 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 5 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 6 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 7 | 1 | 1 | Generate & evaluate candidate solution |
-| 8 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 10 | 1 | 1 | Generate & evaluate candidate solution |
-
-**Run 4**
-
-| Iter | Eval calls | LLM calls | Purpose |
-|---|---|---|---|
-| 1 | 1 | 1 | Generate & evaluate candidate solution |
-| 2 | 1 | 1 | Generate & evaluate candidate solution |
-| 3 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 4 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 5 | 1 | 1 | Generate & evaluate candidate solution |
-| 6 | 1 | 6 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy (2 attempts, 1 failed validation) |
-| 7 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 8 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 10 | 1 | 1 | Generate & evaluate candidate solution |
-
-**Run 5**
-
-| Iter | Eval calls | LLM calls | Purpose |
-|---|---|---|---|
-| 1 | 1 | 1 | Generate & evaluate candidate solution |
-| 2 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 3 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 4 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 5 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 6 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 7 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 8 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 9 | 1 | 5 | Generate & evaluate candidate solution; Stagnation → summarize population/problem/strategies (×3) + write new strategy |
-| 10 | 1 | 1 | Generate & evaluate candidate solution |
+<div class="calls-table">
+<style>
+  .calls-table {
+    --ct-ink: #1e2b3c; --ct-ink-soft: #5b6b80; --ct-panel: #ffffff; --ct-line: #d3dce6; --ct-bg: #f6f8fb;
+    margin: 20px 0 28px; font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; font-size: 13.5px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .calls-table { --ct-ink: #e7edf5; --ct-ink-soft: #9db0c4; --ct-panel: #141f2d; --ct-line: #263344; --ct-bg: #0e1620; }
+  }
+  .calls-table table { width: 100%; border-collapse: collapse; }
+  .calls-table th, .calls-table td { border: 1px solid var(--ct-line); padding: 8px 12px; text-align: center; }
+  .calls-table thead tr:first-child th { background: var(--ct-bg); font-size: 15px; font-weight: 700; color: var(--ct-ink); }
+  .calls-table thead tr:last-child th { color: var(--ct-ink-soft); font-weight: 600; font-size: 12.5px; }
+  .calls-table tbody td { color: var(--ct-ink); }
+  .calls-table tbody th { color: var(--ct-ink); text-align: left; }
+</style>
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Run</th>
+      <th colspan="3">AI Telco Engineer</th>
+      <th colspan="2">EvoX / SkyDiscover</th>
+    </tr>
+    <tr>
+      <th>Eval calls</th>
+      <th>LLM calls</th>
+      <th>Sionna retrievals</th>
+      <th>Eval calls</th>
+      <th>LLM calls</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th>1</th><td>12</td><td>79</td><td>17</td><td>10</td><td>34</td></tr>
+    <tr><th>2</th><td>15</td><td>80</td><td>16</td><td>10</td><td>30</td></tr>
+    <tr><th>3</th><td>10</td><td>87</td><td>26</td><td>10</td><td>38</td></tr>
+    <tr><th>4</th><td>11</td><td>104</td><td>28</td><td>10</td><td>35</td></tr>
+    <tr><th>5</th><td>13</td><td>88</td><td>20</td><td>10</td><td>42</td></tr>
+  </tbody>
+</table>
+</div>

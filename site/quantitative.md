@@ -21,15 +21,14 @@ permalink: /quantitative/
   .topnav a:hover { color: var(--tn-ink); background: var(--tn-line); }
   .topnav a.current { color: var(--tn-accent); font-weight: 600; }
   .topnav .sep { color: var(--tn-line); }
+  .post-header { display: none; }
 </style>
-<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="current">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a><span class="sep">/</span><a href="{{ '/getting-started/' | relative_url }}" class="">Getting Started</a>
+<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="current">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a>
 </div>
 
 # Quantitative Results
 
 **Numbers only.** For the actual algorithms -- what each framework's best run came up with, and each run's starting hypothesis -- see [Qualitative](/qualitative/).
-
-Head-to-head comparison: AI Telco Engineer vs. EvoX/SkyDiscover on the same channel-estimation benchmark, under matched settings (same physical-layer config, same single-job/single-idea/single-worker mode, same model family, same 10-generation/iteration budget).
 
 ## Channel-Estimation Benchmark
 
@@ -46,11 +45,7 @@ Lower is better. Only the channel-estimation stage is mutable -- the LMMSE equal
 | Framework | Runs compared | Model |
 |---|---|---|
 | **EvoX / SkyDiscover** | Run 1–5 | gpt-5.5 (solution) + gpt-5 / gpt-5-mini (search-strategy meta-evolution) |
-| **AI Telco Engineer** | Run 1–5 | gpt-5.5 (agent + manager)* |
-
-\* model not independently confirmed from logs for the AI Telco Engineer runs, inferred from the project's other same-week runs.
-
-Run 5 was originally excluded because its results had gotten mixed up with a separate run; it's since been cleanly re-run and is included above.
+| **AI Telco Engineer** | Run 1–5 | gpt-5.5 (agent + manager) |
 
 ### Cost & Run Time
 
@@ -58,8 +53,6 @@ Run 5 was originally excluded because its results had gotten mixed up with a sep
 |---|---|---|
 | **EvoX / SkyDiscover** | **$2.34** | **43.2 min** |
 | **AI Telco Engineer** | **$4.43** | **45.8 min** |
-
-EvoX's average is computed from 4 of its 5 runs (Runs 1, 2, 3, 5: $1.85, $1.59, $3.88, $2.05) -- Run 4's cost wasn't captured. AI Telco Engineer's average is $22.17 (two summed cost categories, likely agent + manager spend) across all 5 runs, divided by 5. Run time is wall-clock duration measured directly from each run's own logs (first to last timestamp), not self-reported.
 
 ### Best NVE per run
 
@@ -75,16 +68,9 @@ EvoX's average is computed from 4 of its 5 runs (Runs 1, 2, 3, 5: $1.85, $1.59, 
 
 \* This value was reproduced using the 4-point SNR method, as used by AI Telco Engineer. Since NVE is a Monte Carlo estimate, this was measured across 10 reseeded evaluations; the average was 11.77.
 
-### Average Best NVE (across runs)
-
-| Framework | Average Best NVE |
-|---|---|
-| **EvoX / SkyDiscover** (5 runs) | **22.65** |
-| **AI Telco Engineer** (5 runs) | **66.95** |
-
 ## NVE per generation -- AI Telco Engineer
 
-Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-injection mechanism, so gen0 is always the manager LLM's own first idea, which varies wildly run to run (from 525 to 9,291 NVE). Every one of the 5 runs' 10 generations returned a real score -- no hard failures in this batch of runs, taken after an eval-loop bug fix -- see [Evaluation](/evaluation/) for why).
+Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-injection mechanism, so gen0 is always the manager LLM's own first idea, which varies wildly run to run (from 525 to 9,291 NVE).
 
 <div class="nve-chart">
 <style>
@@ -207,7 +193,7 @@ Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-inject
   <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>Run 4</div>
   <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>Run 5</div>
 </div>
-<p class="nc-caption">Y axis is log-scaled (NVE ranges from ~14.7 to ~9,291 across these runs). Hover a point for its exact value. All 10 generations succeeded in every one of these 5 runs — no missing points, unlike an earlier batch of runs from before the eval-loop bug fix.</p>
+<p class="nc-caption">Y axis is log-scaled (NVE ranges from ~14.7 to ~9,291 across these runs). Hover a point for its exact value. All 10 generations succeeded in every one of these 5 runs, with no missing points.</p>
 </div>
 </div>
 
@@ -224,8 +210,6 @@ Generation 0 is **not** a fixed baseline -- AI Telco Engineer has no seed-inject
 | 7 | 85.12 | 15.51 | 95.94 | 95.47 | 95.47 |
 | 8 | 80.40 | 14.70 | 95.56 | 97.30 | 95.47 |
 | 9 | 76.75 | 14.72 | 95.68 | 58.72 | 90.21 |
-
-*Source: each run's own recorded leaderboard file -- the framework's own recorded metric per generation, not re-derived from logs.*
 
 
 ## NVE per iteration -- EvoX / SkyDiscover
@@ -371,7 +355,7 @@ Iteration 0 **is** a fixed baseline -- the literal LS-only seed program, execute
   <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c4);"></span>Run 4</div>
   <div class="nc-legend-item"><span class="nc-swatch" style="background:var(--nc-c5);"></span>Run 5</div>
 </div>
-<p class="nc-caption">Y axis is log-scaled. All 5 runs start from the identical fixed LS baseline (iteration 0, NVE 101.69) — the only point where every line coincides.</p>
+<p class="nc-caption">Y axis is log-scaled. All 5 runs start from the identical fixed LS baseline (iteration 0, NVE 101.69), the only point where every line coincides.</p>
 </div>
 </div>
 

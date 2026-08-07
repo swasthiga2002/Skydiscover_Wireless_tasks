@@ -21,27 +21,55 @@ permalink: /qualitative/
   .topnav a:hover { color: var(--tn-ink); background: var(--tn-line); }
   .topnav a.current { color: var(--tn-accent); font-weight: 600; }
   .topnav .sep { color: var(--tn-line); }
+  .post-header { display: none; }
 </style>
-<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="current">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a><span class="sep">/</span><a href="{{ '/getting-started/' | relative_url }}" class="">Getting Started</a>
+<a href="{{ '/' | relative_url }}" class="">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="current">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a>
 </div>
 
 # Qualitative Results
 
 **The actual algorithms.** For NVE numbers and run statistics only, see [Quantitative](/quantitative/).
 
+## The Task
+
+Both frameworks were given the same problem: given the noisy received signal from a multi-antenna uplink transmission over a realistic outdoor wireless channel, estimate that channel well enough to recover the transmitted bits.
+
+The transmitter sends a mix of known reference symbols (pilots) and unknown data symbols across many subcarriers and time slots, all distorted by the channel and corrupted by additive receiver noise. A solution receives two things: the received signal, covering every antenna, subcarrier, and time slot, and the noise level at the receiver. From that, it must produce a channel estimate, plus a confidence/error-variance measure, using only the pilot symbols to infer what happened to the unseen data symbols.
+
+That channel estimate then feeds a fixed downstream pipeline that turns it into soft bit decisions, which a standard error-correcting code decodes into a final result. A solution is scored by how close its resulting bit-error rate gets to the bit-error rate achievable with perfect knowledge of the channel, averaged across several low-SNR (noisy) operating points.
+
 ## Best Algorithm -- Side by Side
 
 | | EvoX / SkyDiscover | AI Telco Engineer |
 |---|---|---|
 | Run | Run 4, iteration 5 | Run 2 |
-| NVE | **9.985** | 14.7047 |
+| NVE | **9.985\*** | 14.7047 |
 | Approach | LS seed → delay-domain Wiener PDP shrinkage → RX-antenna spatial covariance eigenshrinkage → 5-tap time smoothing → residual-based error-variance calibration | LS seed → pilot-only empirical-Bayes GP/Wiener estimator with a bank of candidate delay-Doppler correlation kernels (multiple frequency/Doppler profiles), soft-selected per link/receive-chain by a GP-marginal-likelihood-style score, blended with the LS estimate → one decision-directed refinement pass using high-confidence data REs as weighted virtual pilots → error-variance calibration |
 | Code size | ~55 lines | ~407 lines |
 
-The gap between the two frameworks' best runs narrows substantially once AI Telco Engineer's results are corrected to use current, post-fix data (see the [Quantitative](/quantitative/) page): 9.985 vs. 14.70, not the much wider margin implied by an earlier draft of this comparison that used stale, pre-fix data. EvoX's winning solution is still the simpler, more direct pipeline -- no runtime branching or candidate selection -- while AI Telco Engineer's winner explicitly builds and scores several candidate covariance kernels per call before committing to one.
+The gap between the two frameworks' best runs narrows substantially once AI Telco Engineer's results are corrected to use current, post-fix data (see the [Quantitative](/quantitative/) page): 9.985* vs. 14.70, not the much wider margin implied by an earlier draft of this comparison that used stale, pre-fix data. EvoX's winning solution is still the simpler, more direct pipeline -- no runtime branching or candidate selection -- while AI Telco Engineer's winner explicitly builds and scores several candidate covariance kernels per call before committing to one.
 
-<details>
-<summary><strong>SkyDiscover best (Run 4, iteration 5) -- click to expand</strong></summary>
+\* This value was reproduced using the 4-point SNR method, as used by AI Telco Engineer. Since NVE is a Monte Carlo estimate, this was measured across 10 reseeded evaluations; the average was 11.77.
+
+<div class="code-compare">
+<style>
+  .code-compare {
+    --cc-ink: #1e2b3c; --cc-ink-soft: #5b6b80; --cc-panel: #ffffff; --cc-line: #d3dce6;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 20px 0 28px;
+    font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    .code-compare { --cc-ink: #e7edf5; --cc-ink-soft: #9db0c4; --cc-panel: #141f2d; --cc-line: #263344; }
+  }
+  @media (max-width: 720px) { .code-compare { grid-template-columns: 1fr; } }
+  .code-compare .cc-panel { border: 1px solid var(--cc-line); background: var(--cc-panel); padding: 12px 14px; border-radius: 4px; min-width: 0; }
+  .code-compare .cc-title { margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--cc-ink); }
+  .code-compare .cc-panel pre { margin: 0; overflow-x: auto; font-size: 12px; }
+  .code-compare .cc-desc { font-size: 13px; line-height: 1.55; color: var(--cc-ink-soft); margin: 0; }
+</style>
+
+<div class="cc-panel" markdown="1">
+<p class="cc-title">SkyDiscover best (Run 4, iteration 5)</p>
 
 ```python
 from sionna.phy.ofdm import LSChannelEstimator, LMMSEEqualizer
@@ -111,14 +139,12 @@ def mimo_detector(y, no):
     return llr
 ```
 
-</details>
-
-<details>
-<summary><strong>AI Telco Engineer best (Run 2) -- click to expand</strong></summary>
-
-~407 lines -- precomputes pilot masks/indices and a bank of candidate delay-Doppler correlation kernels (`_K_BANK`: several exponential/uniform/truncated-exponential delay profiles × several Doppler profiles derived from `CARRIER_FREQUENCY`), per receive-chain/stream solves a batched Cholesky system against each candidate kernel (`_eb_gp_estimate`), scores candidates with a blended leave-one-out/marginal negative-log-likelihood, soft-mixes the top-3 candidates with the raw LS estimate by a softmax over that score, then runs one decision-directed refinement pass (`_dd_refine`): equalizes and demaps with the initial estimate, converts LLRs to soft QAM means/variances, treats a capped, confidence-gated subset of data REs as additional weighted virtual pilots, and refits the same kernel-based estimate before final equalization/demapping.
-
-</details>
+</div>
+<div class="cc-panel">
+<p class="cc-title">AI Telco Engineer best (Run 2)</p>
+<p class="cc-desc">~407 lines -- precomputes pilot masks/indices and a bank of candidate delay-Doppler correlation kernels (<code>_K_BANK</code>: several exponential/uniform/truncated-exponential delay profiles &times; several Doppler profiles derived from <code>CARRIER_FREQUENCY</code>), per receive-chain/stream solves a batched Cholesky system against each candidate kernel (<code>_eb_gp_estimate</code>), scores candidates with a blended leave-one-out/marginal negative-log-likelihood, soft-mixes the top-3 candidates with the raw LS estimate by a softmax over that score, then runs one decision-directed refinement pass (<code>_dd_refine</code>): equalizes and demaps with the initial estimate, converts LLRs to soft QAM means/variances, treats a capped, confidence-gated subset of data REs as additional weighted virtual pilots, and refits the same kernel-based estimate before final equalization/demapping.</p>
+</div>
+</div>
 
 ## Initial Hypothesis vs. Best NVE -- AI Telco Engineer
 
@@ -143,11 +169,5 @@ EvoX has no per-run hypothesis assignment -- every run starts from the identical
 | 1 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 13.22 |
 | 2 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 11.86 |
 | 3 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 19.94 |
-| 4 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 9.98 |
+| 4 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 9.98* |
 | 5 | Fixed LS baseline (identical starting point every run, no assigned approach) -- NVE 101.69 | 58.27 |
-
-## Methodology Notes
-
-- **AI Telco Engineer data source: current, post-fix runs.** See the [Quantitative](/quantitative/) page for why -- in short, an earlier draft of this comparison mistakenly used data from before a bug fix; the numbers here reflect the corrected runs.
-- **Zero hard failures in the current runs.** Every one of the 5 runs' 10 generations returned a real score. This is a qualitative difference from the pre-fix behavior, not just a quantitative one -- see [Evaluation](/evaluation/) for the retry-loop mechanism responsible.
-- **All 5 AI Telco hypotheses converge on the same algorithmic family** (delay-Doppler transform-domain denoising + decision-directed refinement), assigned independently by the manager LLM without seeing each other. EvoX has no equivalent diversity mechanism at the hypothesis level -- its exploration happens entirely through the search-strategy meta-evolution described on the [Architecture](/architecture/) page.

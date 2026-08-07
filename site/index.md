@@ -22,18 +22,22 @@ permalink: /
   .topnav a.current { color: var(--tn-accent); font-weight: 600; }
   .topnav .sep { color: var(--tn-line); }
 </style>
-<a href="{{ '/' | relative_url }}" class="current">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a><span class="sep">/</span><a href="{{ '/getting-started/' | relative_url }}" class="">Getting Started</a>
+<a href="{{ '/' | relative_url }}" class="current">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a>
 </div>
 
 # Channel Estimation Task
 
+*Dr. Krishna Narayanan and Swasthiga Rengasamy*
+
 ## Objective
 
-Recently, Aoudia et al. [\[1\]](#ref-1) introduced the AI Telco Engineer, an agentic framework that autonomously discovers solutions to an OFDM channel estimation problem. Inspired by that work, we explore whether more recent LLMs and a newer agentic search algorithm — EvoX [\[2\]](#ref-2), which evolves its own search strategy via LLMs as the run progresses, run here inside the SkyDiscover framework [\[3\]](#ref-3) — can produce better solutions to the OFDM channel estimation problem considered in [\[1\]](#ref-1), under matched settings on the same benchmark.
+Recently, Aoudia et al. [\[1\]](#ref-1) introduced the AI Telco Engineer, an agentic framework that autonomously discovers solutions to an OFDM channel estimation problem. Inspired by that work, we explore whether more recent LLMs and a newer agentic search algorithm (EvoX [\[2\]](#ref-2), which evolves its own search strategy via LLMs as the run progresses, run here inside the SkyDiscover framework [\[3\]](#ref-3)) can produce better solutions to the OFDM channel estimation problem considered in [\[1\]](#ref-1), under matched settings on the same benchmark.
 
 ## Findings
 
-With GPT-5.5 and EvoX, the Normalized Validation Error (NVE) improved from the approximately 30 reported in [\[1\]](#ref-1) to 9.98. Running AI Telco Engineer with GPT-5.5 improved the NVE to 14.70.
+With GPT-5.5 and EvoX, the Normalized Validation Error (NVE) improved from the approximately 30 reported in [\[1\]](#ref-1) to 9.98*. Running AI Telco Engineer with GPT-5.5 improved the NVE to 14.70.
+
+\* This value was reproduced using the 4-point SNR method, as used by AI Telco Engineer. Since NVE is a Monte Carlo estimate, this was measured across 10 reseeded evaluations; the average was 11.77.
 
 See [Quantitative](/quantitative/) for the head-to-head numbers and [Qualitative](/qualitative/) for the actual algorithms.
 
@@ -43,20 +47,11 @@ SkyDiscover [\[3\]](#ref-3) is a modular framework for AI-driven algorithmic dis
 
 ## AI Telco Engineer
 
-AI Telco Engineer deploys a swarm of parallel LLM agents, each in its own isolated containerized workspace, to autonomously design and optimize wireless algorithms such as channel estimation. It runs an idea-driven loop: an orchestrator LLM proposes N distinct algorithmic ideas each generation, distributes M agents across those ideas, then reviews all summaries and metrics to propose new ideas for the next generation. Progress is tracked on a live leaderboard, but there's no seed-injection or checkpoint-resume mechanism — every generation-0 idea comes fresh from the orchestrator with no fixed starting point.
+AI Telco Engineer deploys a swarm of parallel LLM agents, each in its own isolated containerized workspace, to autonomously design and optimize wireless algorithms such as channel estimation. It runs an idea-driven loop: an orchestrator LLM proposes N distinct algorithmic ideas each generation, distributes M agents across those ideas, then reviews all summaries and metrics to propose new ideas for the next generation. Progress is tracked on a live leaderboard, but there's no seed-injection or checkpoint-resume mechanism: every generation-0 idea comes fresh from the orchestrator with no fixed starting point.
 
 ## EvoX Algorithm
 
-EvoX [\[2\]](#ref-2) is a self-evolving search algorithm, run here as one of the pluggable search algorithms supported by SkyDiscover [\[3\]](#ref-3): it runs two nested loops — an inner loop that evolves candidate channel estimators, and an outer loop that rewrites the sampling/selection strategy itself whenever progress stalls. Roughly every 10% of the iteration budget without improvement, EvoX scores the current search strategy, has an LLM author a brand-new one, validates it, and migrates the whole population into it — see [Architecture](/architecture/) for the full mechanism. Because the strategy adapts to what's actually working on this specific task, we expect EvoX to reach lower NVE more reliably than AI Telco Engineer's fixed loop, and the [Quantitative](/quantitative/) page bears this out: lowest NVE of 9.98 for EvoX vs. 14.70 for AI Telco Engineer.
-
-## Quick Links
-
-- [Architecture](/architecture/)
-- [Quantitative](/quantitative/)
-- [Qualitative](/qualitative/)
-- [Evaluation](/evaluation/)
-- [Getting Started](/getting-started/)
-- [GitHub repo](https://github.com/swasthiga2002/Skydiscover_Wireless_tasks)
+EvoX [\[2\]](#ref-2) is a self-evolving search algorithm, run here as one of the pluggable search algorithms supported by SkyDiscover [\[3\]](#ref-3): it runs two nested loops, an inner loop that evolves candidate channel estimators, and an outer loop that rewrites the sampling/selection strategy itself whenever progress stalls. Roughly every 10% of the iteration budget without improvement, EvoX scores the current search strategy, has an LLM author a brand-new one, validates it, and migrates the whole population into it (see [Architecture](/architecture/) for the full mechanism). Because the strategy adapts to what's actually working on this specific task, we expect EvoX to reach lower NVE more reliably than AI Telco Engineer's fixed loop, and the [Quantitative](/quantitative/) page bears this out: lowest NVE of 9.98* for EvoX vs. 14.70 for AI Telco Engineer.
 
 ## References
 

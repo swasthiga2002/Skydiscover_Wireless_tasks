@@ -59,6 +59,9 @@ EvoX [\[2\]](#ref-2) is a self-evolving search algorithm, run here as one of the
 
 ## Authors
 
-Dr. Krishna Narayanan and Swasthiga Rengasamy (MS student, Electrical Engineering)
+Dr. Krishna Narayanan  
+Swasthiga Rengasamy, MS Student in Electrical Engineering
 
-Texas A&M University, Department of Electrical and Computer Engineering, Information Science and Learning Systems group
+Information Science and Learning Systems Group  
+Department of Electrical and Computer Engineering  
+Texas A&M University

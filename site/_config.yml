@@ -5,7 +5,6 @@ url: "https://swasthiga2002.github.io"
 baseurl: "/Skydiscover_Wireless_tasks"
 
 header_pages:
-  - architecture.md
   - quantitative.md
   - qualitative.md
   - evaluation.md

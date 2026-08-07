@@ -22,7 +22,7 @@ permalink: /
   .topnav a.current { color: var(--tn-accent); font-weight: 600; }
   .topnav .sep { color: var(--tn-line); }
 </style>
-<a href="{{ '/' | relative_url }}" class="current">Home</a><span class="sep">/</span><a href="{{ '/architecture/' | relative_url }}" class="">Architecture</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a>
+<a href="{{ '/' | relative_url }}" class="current">Home</a><span class="sep">/</span><a href="{{ '/quantitative/' | relative_url }}" class="">Quantitative</a><span class="sep">/</span><a href="{{ '/qualitative/' | relative_url }}" class="">Qualitative</a><span class="sep">/</span><a href="{{ '/evaluation/' | relative_url }}" class="">Evaluation</a>
 </div>
 
 ## Objective
@@ -47,7 +47,7 @@ AI Telco Engineer deploys a swarm of parallel LLM agents, each in its own isolat
 
 ## EvoX Algorithm
 
-EvoX [\[2\]](#ref-2) is a self-evolving search algorithm, run here as one of the pluggable search algorithms supported by SkyDiscover [\[3\]](#ref-3): it runs two nested loops, an inner loop that evolves candidate channel estimators, and an outer loop that rewrites the sampling/selection strategy itself whenever progress stalls. Roughly every 10% of the iteration budget without improvement, EvoX scores the current search strategy, has an LLM author a brand-new one, validates it, and migrates the whole population into it (see [Architecture](/architecture/) for the full mechanism). Because the strategy adapts to what's actually working on this specific task, we expect EvoX to reach lower NVE more reliably than AI Telco Engineer's fixed loop, and the [Quantitative](/quantitative/) page bears this out: lowest NVE of 9.98* for EvoX vs. 14.70 for AI Telco Engineer.
+EvoX [\[2\]](#ref-2) is a self-evolving search algorithm, run here as one of the pluggable search algorithms supported by SkyDiscover [\[3\]](#ref-3). It runs two nested evolutionary processes at once: an inner loop that evolves candidate solutions to the target problem (e.g. a channel estimator) using whatever sampling/selection logic is currently installed in the program database, and an outer loop that evolves that search strategy itself, the code deciding how solutions are sampled and combined, whenever progress on the inner loop stalls. Solutions evolve inside the current database's logic while that logic evolves across switches: both levels adapt, and each shapes what the other can discover next. Roughly every 10% of the iteration budget without improvement, EvoX scores the current search strategy, has an LLM author a brand-new one, validates it, and migrates the whole population into it. Because the strategy adapts to what's actually working on this specific task, we expect EvoX to reach lower NVE more reliably than AI Telco Engineer's fixed loop, and the [Quantitative](/quantitative/) page bears this out: lowest NVE of 9.98* for EvoX vs. 14.70 for AI Telco Engineer.
 
 ## References
 
